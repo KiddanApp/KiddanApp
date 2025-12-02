@@ -21,6 +21,30 @@ uvicorn app.main:app --reload --port 8000
 (Note: Run from the punjabi-tutor-backend/ directory. Ensure virtual environment is activated if using one.)
 6. Visit `http://localhost:8000/docs` to test endpoints.
 
+## Admin Panel
+
+Access the admin panel at `/admin` to manage lessons and characters:
+
+**Authentication:**
+- Enter your `GEMINI_API_KEY` in the admin key field
+- All admin operations require this key in the `X-Admin-Key` header
+
+**Features:**
+- **Character Management**: View and select characters
+- **Lesson Management**:
+  - Add new lessons at specific positions (inserts and shifts existing lessons)
+  - Edit lesson titles and step content
+  - Delete lessons
+  - **Drag & Drop Reordering**: Reorder lessons by dragging them
+  - Edit lesson steps with different types (info, multiple-choice, text-input, feedback, completion)
+
+**API Endpoints:**
+- `GET /admin` - Admin panel interface
+- `GET/POST/PUT/DELETE /admin/characters` - Character CRUD
+- `GET/POST/PUT/DELETE /admin/lessons` - Lesson CRUD
+- `POST /admin/lessons/{character_id}/insert` - Insert lesson at position
+- `POST /admin/lessons/{character_id}/reorder` - Reorder lessons
+
 ## Deployment
 
 This app is configured for deployment on Railway with MongoDB. Railway automatically provides the `MONGODB_URL` environment variable.
