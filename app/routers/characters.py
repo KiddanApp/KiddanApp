@@ -1,21 +1,22 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.schemas import CharacterOut
-import json
-from pathlib import Path
+from app.db import get_database
+from app.services.character_service import CharacterService
 
 router = APIRouter()
-CHAR_PATH = Path(__file__).resolve().parents[1] / "seed" / "characters.json"
+
+def get_character_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> CharacterService:
+    return CharacterService(db)
 
 @router.get("/", response_model=list[CharacterOut])
-async def list_characters():
-    with open(CHAR_PATH, "r", encoding="utf8") as f:
-        chars = json.load(f)
-    return [chars[k] for k in chars]
+async def list_characters(service: CharacterService = Depends(get_character_service)):
+    characters = await service.get_all_characters()
+    return characters
 
 @router.get("/{char_id}", response_model=CharacterOut)
-async def get_character(char_id: str):
-    with open(CHAR_PATH, "r", encoding="utf8") as f:
-        chars = json.load(f)
-    if char_id not in chars:
+async def get_character(char_id: str, service: CharacterService = Depends(get_character_service)):
+    character = await service.get_character(char_id)
+    if not character:
         raise HTTPException(status_code=404, detail="character not found")
-    return chars[char_id]
+    return character

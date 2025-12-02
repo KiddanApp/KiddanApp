@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, List, Any
 from datetime import datetime
 
 class Message(BaseModel):
@@ -13,3 +13,49 @@ class Message(BaseModel):
     ai_message_gurmukhi: str
     language: str
     timestamp: datetime = datetime.utcnow()
+
+class CharacterMessage(BaseModel):
+    romanPunjabi: Optional[str] = None
+    gurmukhi: Optional[str] = None
+    romanEnglish: Optional[str] = None
+    culturalNote: Optional[str] = None
+    audioUrl: Optional[str] = None
+
+class LessonStep(BaseModel):
+    id: str
+    trigger: str  # "auto", "user-response"
+    delay: Optional[int] = None
+    characterMessage: Optional[CharacterMessage] = None
+    lessonType: str  # "info", "multiple-choice", "text-input", "feedback", "completion"
+    question: Optional[str] = None
+    options: Optional[List[str]] = None
+    correctAnswers: Optional[List[str]] = None
+    hints: Optional[List[str]] = None
+    branching: Optional[Dict[str, str]] = None  # {"onCorrect": "stepX", "onIncorrect": "stepY"}
+    nextStepId: Optional[str] = None
+
+class Lesson(BaseModel):
+    id: str
+    characterId: str
+    title: str
+    steps: List[LessonStep]
+
+class LessonData(BaseModel):
+    characterId: str
+    characterName: str
+    lessons: List[Lesson]
+
+class Character(BaseModel):
+    id: str
+    name: str
+    nameGurmukhi: Optional[str] = None
+    role: str
+    personality: Optional[str] = None
+    background: Optional[str] = None
+    speaking_style: Optional[str] = None
+    status: Optional[str] = None
+    difficulty: Optional[str] = None
+    languages: Optional[List[str]] = None
+    prompt_style: Optional[str] = None
+    emotion_map: Optional[Dict[str, str]] = None
+    conversation_topics: Optional[List[str]] = None

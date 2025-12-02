@@ -1,13 +1,15 @@
-import json
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
+from fastapi import APIRouter, HTTPException, Depends
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from app.db import get_database
+from app.services.lesson_service import LessonService
 
 router = APIRouter()
 
-LESSONS_PATH = Path(__file__).resolve().parents[1] / "seed" / "lessons"
+def get_lesson_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> LessonService:
+    return LessonService(db)
 
 @router.get("/{character_key}")
-async def get_character_lessons(character_key: str):
+async def get_character_lessons(character_key: str, service: LessonService = Depends(get_lesson_service)):
     """
     Get lesson data for a specific character.
 
@@ -18,24 +20,16 @@ async def get_character_lessons(character_key: str):
         JSON object containing all lessons for the character
     """
     try:
-        lesson_file = LESSONS_PATH / f"{character_key}.json"
+        lesson_data = await service.get_character_lessons(character_key)
 
-        if not lesson_file.exists():
+        if not lesson_data:
             raise HTTPException(
                 status_code=404,
                 detail=f"Lesson data not found for character: {character_key}"
             )
 
-        with open(lesson_file, "r", encoding="utf-8") as f:
-            lesson_data = json.load(f)
+        return lesson_data.model_dump()
 
-        return lesson_data
-
-    except json.JSONDecodeError:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Invalid JSON format in lesson file for character: {character_key}"
-        )
     except Exception as e:
         raise HTTPException(
             status_code=500,

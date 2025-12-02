@@ -8,14 +8,18 @@
    ```bash
    pip install -r requirements.txt
    ```
-4. Run the server
+4. Seed the database with initial data
+   ```bash
+   python -m app.seed.seed_db
+   ```
+5. Run the server
 ```bash
 uvicorn app.main:app --reload --port 8000
 # On Windows PowerShell, use semicolons instead of && if chaining commands:
 # pip install -r requirements.txt; uvicorn app.main:app --reload --port 8000
 ```
 (Note: Run from the punjabi-tutor-backend/ directory. Ensure virtual environment is activated if using one.)
-5. Visit `http://localhost:8000/docs` to test endpoints.
+6. Visit `http://localhost:8000/docs` to test endpoints.
 
 ## Deployment
 

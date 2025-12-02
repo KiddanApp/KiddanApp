@@ -10,6 +10,6 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ""
     MAX_HISTORY: int = 3
-    MONGODB_URL: str = "mongodb://localhost:27017/punjabi_tutor"
+    MONGODB_URL: str = "mongodb://mongo:rBYiRMyicZSzBbfqGZpAfGEfXDaKlbLC@caboose.proxy.rlwy.net:34905"
 
 settings = Settings()
