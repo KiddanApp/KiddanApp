@@ -9,7 +9,8 @@ from app.routers import characters, chat, lessons, admin
 app = FastAPI(title="PunjabiTutor Backend – Phase 1")
 
 # Mount static files
-static_dir = os.path.join(os.path.dirname(__file__), "static")
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+static_dir = os.path.abspath(static_dir)
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
