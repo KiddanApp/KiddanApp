@@ -4,7 +4,6 @@ pydantic
 pydantic-settings
 httpx
 python-dotenv
-sqlalchemy
-aiosqlite
+motor
 pytest
 google-generativeai

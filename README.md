@@ -2,8 +2,8 @@
 
 ## Setup
 
-1. Clone the repo  
-2. Create a `.env` file (copy from `.env.example`) and fill your `GEMINI_API_KEY`
+1. Clone the repo
+2. Create a `.env` file (copy from `.env.example`) and fill your `GEMINI_API_KEY` and `MONGODB_URL`
 3. Install dependencies
    ```bash
    pip install -r requirements.txt
@@ -16,6 +16,10 @@ uvicorn app.main:app --reload --port 8000
 ```
 (Note: Run from the punjabi-tutor-backend/ directory. Ensure virtual environment is activated if using one.)
 5. Visit `http://localhost:8000/docs` to test endpoints.
+
+## Deployment
+
+This app is configured for deployment on Railway with MongoDB. Railway automatically provides the `MONGODB_URL` environment variable.
 
 ## API Endpoints
 

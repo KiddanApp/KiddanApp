@@ -1,18 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from app.db import engine
-from app.models import Base
 
 from app.routers import characters, chat, lessons
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-
-app = FastAPI(title="PunjabiTutor Backend – Phase 1", lifespan=lifespan)
+app = FastAPI(title="PunjabiTutor Backend – Phase 1")
 
 app.add_middleware(
     CORSMiddleware,

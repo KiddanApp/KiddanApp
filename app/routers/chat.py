@@ -1,9 +1,9 @@
 import uuid
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.schemas import ChatRequest, ChatReply
 from app.services.ai_service import generate_reply
-from app.db import get_session
+from app.db import get_database
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ router = APIRouter()
 async def chat_with(
     character_id: str,
     payload: ChatRequest,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     try:
         # Generate conversation ID if not provided

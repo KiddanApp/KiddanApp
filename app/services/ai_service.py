@@ -1,13 +1,13 @@
 import json
 import uuid
 import asyncio
+from datetime import datetime
 import google.generativeai as genai
 from app.config import settings
 from app.services.translation_service import translation_service
 from pathlib import Path
 from typing import Optional, Dict, List
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.models import Message
 
 CHAR_PATH = Path(__file__).resolve().parents[1] / "seed" / "characters.json"
@@ -33,15 +33,14 @@ def call_gemini(prompt: str, max_tokens: int = 80) -> str:
         # Fallback mock response for demo
         return f"Demo response: Hello! I'm here to help you learn Punjabi."
 
-async def get_conversation_history(db: AsyncSession, conversation_id: str, limit: int = 10) -> List[Message]:
+async def get_conversation_history(db: AsyncIOMotorDatabase, conversation_id: str, limit: int = 10) -> List[Message]:
     """Get recent conversation history for context"""
-    result = await db.execute(
-        select(Message)
-        .where(Message.conversation_id == conversation_id)
-        .order_by(Message.timestamp.desc())
-        .limit(limit)
-    )
-    messages = result.scalars().all()
+    cursor = db.messages.find(
+        {"conversation_id": conversation_id}
+    ).sort("timestamp", -1).limit(limit)
+    messages = []
+    async for doc in cursor:
+        messages.append(Message(**doc))
     return list(reversed(messages))  # Return in chronological order
 
 async def generate_reply(
@@ -49,7 +48,7 @@ async def generate_reply(
     user_message: str,
     language: str,
     conversation_id: str,
-    db: AsyncSession,
+    db: AsyncIOMotorDatabase,
     user_id: Optional[str] = None
 ) -> Dict:
     character = await load_character(character_id)
@@ -97,18 +96,18 @@ Keep responses conversational and engaging. Remember previous messages in this c
         expression = "angry"
 
     # Save to database
-    message = Message(
-        conversation_id=conversation_id,
-        user_id=user_id,
-        character_id=character_id,
-        user_message=user_message,
-        ai_message_english=english.strip(),
-        ai_message_roman=roman.strip(),
-        ai_message_gurmukhi=gurmukhi.strip(),
-        language=language
-    )
-    db.add(message)
-    await db.commit()
+    message_data = {
+        "conversation_id": conversation_id,
+        "user_id": user_id,
+        "character_id": character_id,
+        "user_message": user_message,
+        "ai_message_english": english.strip(),
+        "ai_message_roman": roman.strip(),
+        "ai_message_gurmukhi": gurmukhi.strip(),
+        "language": language,
+        "timestamp": datetime.utcnow()
+    }
+    await db.messages.insert_one(message_data)
 
     return {
         "character_id": character_id,
