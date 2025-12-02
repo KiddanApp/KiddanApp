@@ -143,3 +143,10 @@
           "id": "lesson-complete",
           "trigger": "auto",
           "delay": 500,
+          "lessonType": "completion",
+          "nextStepId": null
+        }
+      ]
+    }
+    ]
+}
