@@ -79,6 +79,15 @@
         </div>
 
         <div id="adminContent" class="d-none">
+            <!-- Database Status & Seeding -->
+            <div class="alert alert-info d-none" id="dbStatus">
+                <i class="fas fa-database"></i>
+                <span id="dbStatusText">Checking database status...</span>
+                <button id="seedDatabaseBtn" class="btn btn-sm btn-primary ms-2 d-none">
+                    <i class="fas fa-seedling"></i> Seed Database
+                </button>
+            </div>
+
             <!-- Character Selection -->
             <div class="character-selector">
                 <label for="characterSelect" class="form-label">Select Character:</label>
@@ -205,6 +214,7 @@
         // Initialize
         $(document).ready(function() {
             $('#verifyKey').click(verifyAdminKey);
+            $('#seedDatabaseBtn').click(seedDatabase);
             $('#addLessonBtn').click(showAddLessonForm);
             $('#cancelAddLesson').click(hideAddLessonForm);
             $('#lessonForm').submit(handleAddLesson);
@@ -237,6 +247,7 @@
                 if (response.ok) {
                     $('#authRequired').addClass('d-none');
                     $('#adminContent').removeClass('d-none');
+                    checkDatabaseStatus();
                     loadCharacters();
                 } else {
                     alert('Invalid admin key');
@@ -656,6 +667,62 @@
             .catch(error => {
                 console.error('Error deleting lesson:', error);
                 alert('Error deleting lesson');
+            });
+        }
+
+        // Check database status
+        function checkDatabaseStatus() {
+            $('#dbStatus').removeClass('d-none');
+            $('#dbStatusText').text('Checking database status...');
+            $('#seedDatabaseBtn').addClass('d-none');
+
+            fetch('/admin/characters', {
+                headers: {
+                    'X-Admin-Key': adminKey
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    $('#dbStatusText').text('Database is empty. Click to seed with initial data.');
+                    $('#seedDatabaseBtn').removeClass('d-none');
+                } else {
+                    $('#dbStatusText').text(`Database ready: ${data.length} characters loaded.`);
+                    $('#seedDatabaseBtn').addClass('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error checking database status:', error);
+                $('#dbStatusText').text('Error checking database status.');
+            });
+        }
+
+        // Seed database
+        function seedDatabase() {
+            $('#dbStatusText').text('Seeding database... Please wait.');
+            $('#seedDatabaseBtn').prop('disabled', true);
+
+            fetch('/seed-database', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    $('#dbStatusText').text(`${data.message} (${data.characters_seeded || 0} characters, ${data.lesson_sets_seeded || 0} lesson sets)`);
+                    $('#seedDatabaseBtn').addClass('d-none');
+                    // Reload characters after seeding
+                    setTimeout(() => {
+                        loadCharacters();
+                    }, 1000);
+                } else if (data.error) {
+                    $('#dbStatusText').text(`Error: ${data.error}`);
+                    $('#seedDatabaseBtn').prop('disabled', false);
+                }
+            })
+            .catch(error => {
+                console.error('Error seeding database:', error);
+                $('#dbStatusText').text('Error seeding database.');
+                $('#seedDatabaseBtn').prop('disabled', false);
             });
         }
 

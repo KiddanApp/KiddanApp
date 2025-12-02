@@ -3,10 +3,70 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+from contextlib import asynccontextmanager
 
 from app.routers import characters, chat, lessons, admin
+from app.db import get_database
+from app.services.character_service import CharacterService
+from app.models import Character, LessonData
+import json
+from pathlib import Path
 
-app = FastAPI(title="PunjabiTutor Backend – Phase 1")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Seed database if empty
+    try:
+        db = await get_database()
+        char_service = CharacterService(db)
+
+        # Check if characters exist
+        existing_chars = await char_service.get_all_characters()
+        if not existing_chars:
+            print("Database empty, seeding data...")
+
+            # Seed characters
+            char_path = Path(__file__).parent / "seed" / "characters.json"
+            if char_path.exists():
+                with open(char_path, "r", encoding="utf-8") as f:
+                    chars_data = json.load(f)
+
+                for char_id, char_data in chars_data.items():
+                    character = Character(**char_data)
+                    try:
+                        await char_service.create_character(character)
+                        print(f"Seeded character: {char_id}")
+                    except Exception as e:
+                        print(f"Error seeding character {char_id}: {e}")
+
+            # Seed lessons
+            lessons_path = Path(__file__).parent / "seed" / "lessons"
+            if lessons_path.exists():
+                from app.services.lesson_service import LessonService
+                lesson_service = LessonService(db)
+
+                for lesson_file in lessons_path.glob("*.json"):
+                    try:
+                        with open(lesson_file, "r", encoding="utf-8") as f:
+                            lesson_data = json.load(f)
+
+                        lesson_doc = LessonData(**lesson_data)
+                        existing = await lesson_service.get_character_lessons(lesson_doc.characterId)
+                        if not existing:
+                            await db.lessons.insert_one(lesson_doc.model_dump())
+                            print(f"Seeded lessons for character: {lesson_doc.characterId}")
+                    except Exception as e:
+                        print(f"Error seeding lessons from {lesson_file.name}: {e}")
+
+            print("Database seeding completed!")
+    except Exception as e:
+        print(f"Error during startup seeding: {e}")
+
+    yield
+
+    # Shutdown
+    pass
+
+app = FastAPI(title="PunjabiTutor Backend – Phase 1", lifespan=lifespan)
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
@@ -34,6 +94,62 @@ async def admin_panel():
     if os.path.exists(admin_file):
         return FileResponse(admin_file, media_type='text/html')
     return {"error": "Admin panel not found"}
+
+@app.post("/seed-database")
+async def seed_database():
+    """Manually trigger database seeding"""
+    try:
+        db = await get_database()
+        char_service = CharacterService(db)
+
+        # Check if characters exist
+        existing_chars = await char_service.get_all_characters()
+        if existing_chars:
+            return {"message": "Database already seeded", "characters_count": len(existing_chars)}
+
+        # Seed characters
+        char_path = Path(__file__).parent / "seed" / "characters.json"
+        seeded_chars = 0
+        seeded_lessons = 0
+
+        if char_path.exists():
+            with open(char_path, "r", encoding="utf-8") as f:
+                chars_data = json.load(f)
+
+            for char_id, char_data in chars_data.items():
+                character = Character(**char_data)
+                try:
+                    await char_service.create_character(character)
+                    seeded_chars += 1
+                except Exception as e:
+                    print(f"Error seeding character {char_id}: {e}")
+
+        # Seed lessons
+        lessons_path = Path(__file__).parent / "seed" / "lessons"
+        if lessons_path.exists():
+            from app.services.lesson_service import LessonService
+            lesson_service = LessonService(db)
+
+            for lesson_file in lessons_path.glob("*.json"):
+                try:
+                    with open(lesson_file, "r", encoding="utf-8") as f:
+                        lesson_data = json.load(f)
+
+                    lesson_doc = LessonData(**lesson_data)
+                    existing = await lesson_service.get_character_lessons(lesson_doc.characterId)
+                    if not existing:
+                        await db.lessons.insert_one(lesson_doc.model_dump())
+                        seeded_lessons += 1
+                except Exception as e:
+                    print(f"Error seeding lessons from {lesson_file.name}: {e}")
+
+        return {
+            "message": "Database seeded successfully",
+            "characters_seeded": seeded_chars,
+            "lesson_sets_seeded": seeded_lessons
+        }
+    except Exception as e:
+        return {"error": f"Seeding failed: {str(e)}"}
 
 @app.get("/health")
 async def health():
