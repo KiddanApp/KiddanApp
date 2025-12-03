@@ -54,9 +54,9 @@
           "id": "step3",
           "trigger": "user-response",
           "characterMessage": {
-            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi SSA kaho.",
+            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi Sat Sri Akal kaho.",
             "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
-            "romanEnglish": "Very good! Now you say SSA too."
+            "romanEnglish": "Very good! Now you say Sat Sri Akal too."
           },
           "lessonType": "feedback",
           "nextStepId": "step4"
