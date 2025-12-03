@@ -63,7 +63,7 @@ class Character(BaseModel):
 class UserLessonProgress(BaseModel):
     user_id: str
     character_id: str
-    lesson_id: str
-    current_step_index: int = 0
+    current_lesson_index: int = 0  # Index in character's lessons array
+    current_step_index: int = 0    # Index in current lesson's steps array
     completed: bool = False
     id: Optional[str] = None

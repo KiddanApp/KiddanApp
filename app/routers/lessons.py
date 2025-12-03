@@ -19,12 +19,10 @@ def get_simplified_lesson_service() -> SimplifiedLessonService:
 
 class StartLessonRequest(BaseModel):
     user_id: str
-    lesson_id: str
     character_id: str = "bibi"  # Default to bibi
 
 class AnswerRequest(BaseModel):
     user_id: str
-    lesson_id: str
     character_id: str = "bibi"
     answer: str
 
@@ -33,52 +31,60 @@ async def start_lesson(
     request: StartLessonRequest,
     progress_service: ProgressService = Depends(get_progress_service)
 ):
-    """Start a lesson for a user"""
+    """Start lessons for a character's user"""
     try:
         # Create or get progress
         progress = await progress_service.get_progress(
-            request.user_id, request.character_id, request.lesson_id
+            request.user_id, request.character_id
         )
         if not progress:
             progress = await progress_service.create_progress(
-                request.user_id, request.character_id, request.lesson_id
+                request.user_id, request.character_id
             )
 
-        return {"message": "Lesson started", "progress": progress.model_dump()}
+        return {"message": "Character lessons started", "progress": progress.model_dump()}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error starting lesson: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error starting lessons: {str(e)}")
 
 @router.get("/next")
 async def get_next(
     user_id: str,
-    lesson_id: str,
     character_id: str = "bibi",
     progress_service: ProgressService = Depends(get_progress_service),
     lesson_service: SimplifiedLessonService = Depends(get_simplified_lesson_service)
 ):
-    """Get next interaction in lesson"""
+    """Get next interaction sequentially through all lessons"""
     try:
         # Get current progress
-        progress = await progress_service.get_progress(user_id, character_id, lesson_id)
+        progress = await progress_service.get_progress(user_id, character_id)
         if not progress:
-            raise HTTPException(status_code=404, detail="Lesson not started. Call /lessons/start first.")
+            raise HTTPException(status_code=404, detail="Lessons not started. Call /lessons/start first.")
 
         # Get next interaction
-        interaction = lesson_service.get_next_interaction(lesson_id, progress.current_step_index)
-
-        if not interaction:
-            raise HTTPException(status_code=404, detail="Lesson not found")
+        interaction = lesson_service.get_next_interaction(progress.current_lesson_index, progress.current_step_index)
 
         if interaction["type"] == "completed":
-            # Mark as completed
-            await progress_service.update_progress(user_id, character_id, lesson_id, progress.current_step_index, True)
-            return {"status": "completed"}
+            # All lessons completed
+            await progress_service.update_progress(user_id, character_id, progress.current_lesson_index, progress.current_step_index, True)
+            return {"status": "all_completed"}
 
-        # If advance, update progress
+        if interaction["type"] == "lesson_completed":
+            # Lesson completed, advance to next lesson
+            new_lesson_index = progress.current_lesson_index + 1
+            new_step_index = 0
+            await progress_service.update_progress(user_id, character_id, new_lesson_index, new_step_index)
+            return {
+                "type": "lesson_completed",
+                "lesson_id": interaction["lesson_id"],
+                "lesson_title": interaction["lesson_title"],
+                "next_lesson_starting": True
+            }
+
+        # If advance, update step
         if interaction["advance"]:
-            new_index = progress.current_step_index + 1
-            await progress_service.update_progress(user_id, character_id, lesson_id, new_index)
+            new_step_index = progress.current_step_index + 1
+            await progress_service.update_progress(user_id, character_id, progress.current_lesson_index, new_step_index)
 
         return interaction
 
@@ -97,22 +103,33 @@ async def submit_answer(
     try:
         # Get current progress
         progress = await progress_service.get_progress(
-            request.user_id, request.character_id, request.lesson_id
+            request.user_id, request.character_id
         )
         if not progress:
-            raise HTTPException(status_code=404, detail="Lesson not started")
+            raise HTTPException(status_code=404, detail="Lessons not started")
 
         # Validate answer
         result = lesson_service.validate_answer(
-            request.lesson_id, progress.current_step_index, request.answer
+            progress.current_lesson_index, progress.current_step_index, request.answer
         )
 
         if result["valid"] and result["advance"]:
             # Advance to next step
-            new_index = progress.current_step_index + 1
-            await progress_service.update_progress(
-                request.user_id, request.character_id, request.lesson_id, new_index
-            )
+            new_step_index = progress.current_step_index + 1
+            # Check if this completes the lesson
+            lesson = lesson_service.get_lesson_by_index(progress.current_lesson_index)
+            if lesson and new_step_index >= len(lesson["steps"]):
+                # Lesson completed, advance to next lesson
+                new_lesson_index = progress.current_lesson_index + 1
+                new_step_index = 0
+                await progress_service.update_progress(
+                    request.user_id, request.character_id, new_lesson_index, new_step_index
+                )
+            else:
+                # Just advance step
+                await progress_service.update_progress(
+                    request.user_id, request.character_id, progress.current_lesson_index, new_step_index
+                )
 
         return result
 

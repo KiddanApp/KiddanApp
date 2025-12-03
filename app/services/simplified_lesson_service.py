@@ -16,16 +16,23 @@ class SimplifiedLessonService:
         except Exception as e:
             raise Exception(f"Error loading lesson data: {str(e)}")
 
-    def get_next_interaction(self, lesson_id: str, current_step_index: int) -> Optional[Dict[str, Any]]:
-        """Get the next interaction (question or info)"""
+    def get_lesson_by_index(self, lesson_index: int) -> Optional[Dict[str, Any]]:
+        """Get lesson by index"""
         lessons = self.lesson_data.get("lessons", [])
-        lesson = next((l for l in lessons if l["id"] == lesson_id), None)
-        if not lesson:
+        if lesson_index >= len(lessons):
             return None
+        return lessons[lesson_index]
+
+    def get_next_interaction(self, current_lesson_index: int, current_step_index: int) -> Optional[Dict[str, Any]]:
+        """Get the next interaction (question or info) by indices"""
+        lesson = self.get_lesson_by_index(current_lesson_index)
+        if not lesson:
+            return {"type": "completed"}
 
         steps = lesson.get("steps", [])
         if current_step_index >= len(steps):
-            return {"type": "completed"}
+            # Lesson completed
+            return {"type": "lesson_completed", "lesson_id": lesson["id"], "lesson_title": lesson["title"]}
 
         step = steps[current_step_index]
         lesson_type = step.get("lessonType")
@@ -51,10 +58,9 @@ class SimplifiedLessonService:
                 "advance": True
             }
 
-    def validate_answer(self, lesson_id: str, current_step_index: int, user_answer: str) -> Dict[str, Any]:
+    def validate_answer(self, current_lesson_index: int, current_step_index: int, user_answer: str) -> Dict[str, Any]:
         """Validate user answer and return result"""
-        lessons = self.lesson_data.get("lessons", [])
-        lesson = next((l for l in lessons if l["id"] == lesson_id), None)
+        lesson = self.get_lesson_by_index(current_lesson_index)
         if not lesson:
             return {"valid": False, "error": "Lesson not found"}
 
