@@ -59,3 +59,11 @@ class Character(BaseModel):
     prompt_style: Optional[str] = None
     emotion_map: Optional[Dict[str, str]] = None
     conversation_topics: Optional[List[str]] = None
+
+class UserLessonProgress(BaseModel):
+    user_id: str
+    character_id: str
+    lesson_id: str
+    current_step_index: int = 0
+    completed: bool = False
+    id: Optional[str] = None
