@@ -13,7 +13,10 @@
             "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਪੁੱਤਰ! 🙏",
             "romanEnglish": "Sat Sri Akal, child!",
             "culturalNote": "\"Sat Sri Akal\" (SSA) means \"God is the Eternal Truth.\""
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
           "lessonType": "mcq",
@@ -32,7 +35,10 @@
             "romanPunjabi": "Arey oye, Punjabi vich \"Sat Sri Akal\" kehnde ne. Fer koshish karo.",
             "gurmukhi": "ਅਰੇ ਓਏ, ਪੰਜਾਬੀ ਵਿੱਚ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ\" ਕਹਿੰਦੇ ਨੇ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
             "romanEnglish": "In Punjabi we say \"Sat Sri Akal.\" Try again."
-          }
+          },
+          "question": "Type the correct Punjabi greeting:",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal"]
         },
         {
           "lessonType": "text",
@@ -40,7 +46,10 @@
             "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi SSA kaho.",
             "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
             "romanEnglish": "Very good! Now you say SSA too."
-          }
+          },
+          "question": "Type: Sat Sri Akal",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal"]
         },
         {
           "lessonType": "mcq",
@@ -64,7 +73,10 @@
             "romanPunjabi": "Thoda jeha galat. \"Main theek haan\" ya \"Theek aa ji.\" Chalo fer.",
             "gurmukhi": "ਥੋੜਾ ਜਿਹਾ ਗਲਤ। \"ਮੈਂ ਠੀਕ ਹਾਂ\" ਜਾਂ \"ਠੀਕ ਆ ਜੀ।\" ਚਲੋ ਫਿਰ।",
             "romanEnglish": "Slightly off. Use \"Main theek haan\" or \"Theek aa ji.\" Try again."
-          }
+          },
+          "question": "Type the correct answer:",
+          "options": [],
+          "correctAnswers": ["Main theek haan", "Theek aa ji"]
         },
         {
           "lessonType": "text",
@@ -72,7 +84,10 @@
             "romanPunjabi": "Shabash mere sher! 💕",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼ ਮੇਰੇ ਸ਼ੇਰ! 💕",
             "romanEnglish": "Well done, champ!"
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
           "lessonType": "text",
@@ -81,7 +96,9 @@
             "gurmukhi": "ਹੁਣ ਟਾਈਪਿੰਗ ਦੀ ਪ੍ਰੈਕਟਿਸ। ਲਿਖੋ: \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\"",
             "romanEnglish": "Now a typing drill. Type: \"Sat Sri Akal, Bibi ji.\""
           },
-          "question": "Type the correct sentence:"
+          "question": "Type: Sat Sri Akal, Bibi ji.",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
         },
         {
           "lessonType": "text",
@@ -89,7 +106,10 @@
             "romanPunjabi": "Thoda typos ne. \"Sat Sri Akal, Bibi ji.\" likho. Fer koshish karo.",
             "gurmukhi": "ਥੋੜੇ ਟਾਈਪੋ ਨੇ। \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\" ਲਿਖੋ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
             "romanEnglish": "Some typos. Type \"Sat Sri Akal, Bibi ji.\" again."
-          }
+          },
+          "question": "Retype correctly:",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
         },
         {
           "lessonType": "text",
@@ -97,7 +117,10 @@
             "romanPunjabi": "Wah! Akhar vi sahi, tehziib vi sahi. 👏",
             "gurmukhi": "ਵਾਹ! ਅੱਖਰ ਵੀ ਸਹੀ, ਤਹਜ਼ੀਬ ਵੀ ਸਹੀ। 👏",
             "romanEnglish": "Great! Spelling and politeness both correct."
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
           "lessonType": "text",
@@ -106,7 +129,9 @@
             "gurmukhi": "ਹੁਣ ਇਕ ਹੋਰ: \"ਕੀ ਤੁਸੀਂ ਠੀਕ ਹੋ, ਬੀਬੀ ਜੀ?\"",
             "romanEnglish": "One more: \"Are you fine, Bibi ji?\""
           },
-          "question": "Type in Roman Punjabi:"
+          "question": "Type in Roman Punjabi:",
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
         },
         {
           "lessonType": "text",
@@ -114,7 +139,10 @@
             "romanPunjabi": "Sawaal ch \"Ki\" pehlan aunda. Dubara likho ji.",
             "gurmukhi": "ਸਵਾਲ ਵਿੱਚ \"ਕੀ\" ਪਹਿਲਾਂ ਆਉਂਦਾ। ਦੁਬਾਰਾ ਲਿਖੋ ਜੀ।",
             "romanEnglish": "In questions, \"Ki\" comes first. Try again."
-          }
+          },
+          "question": "Rewrite the question correctly:",
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
         },
         {
           "lessonType": "text",
@@ -122,7 +150,10 @@
             "romanPunjabi": "Haye meri akalmand! 💐",
             "gurmukhi": "ਹਾਏ ਮੇਰੀ ਅਕਲਮੰਦ! 💐",
             "romanEnglish": "So smart!"
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
           "lessonType": "mcq",
@@ -141,7 +172,10 @@
             "romanPunjabi": "Rozana sab ton vadh varton wali gall \"Sat Sri Akal!\" hi hai.",
             "gurmukhi": "ਰੋਜ਼ਾਨਾ ਸਭ ਤੋਂ ਵੱਧ ਵਰਤੋਂ ਵਾਲੀ ਗੱਲ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ!\" ਹੀ ਹੈ।",
             "romanEnglish": "The most common everyday choice is \"Sat Sri Akal!\""
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
           "lessonType": "text",
@@ -149,7 +183,10 @@
             "romanPunjabi": "Bahut khub! Tussi sikh gaye basic greetings! 🎉",
             "gurmukhi": "ਬਹੁਤ ਖੂਬ! ਤੁਸੀਂ ਸਿੱਖ ਗਏ ਬੇਸਿਕ ਗ੍ਰੀਟਿੰਗਜ਼! 🎉",
             "romanEnglish": "Excellent! You learned basic greetings!"
-          }
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         }
       ]
     },
@@ -164,7 +201,10 @@
             "romanPunjabi": "Chalo khandaan de naavan sikhiye. \"Maa\" ki hunda?",
             "gurmukhi": "ਚਲੋ ਖ਼ਾਨਦਾਨ ਦੇ ਨਾਵਾਂ ਸਿੱਖੀਏ। \"ਮਾਂ\" ਕੀ ਹੁੰਦਾ?",
             "romanEnglish": "Let's learn family words. What is \"Maa\"?"
-          }
+          },
+          "question": "Type the meaning of 'Maa' in English:",
+          "options": [],
+          "correctAnswers": ["Mother"]
         }
       ]
     },
@@ -179,7 +219,10 @@
             "romanPunjabi": "Aao rozana de kaam: \"khana\", \"pina\", \"sona\", \"kam karna\".",
             "gurmukhi": "ਆਓ ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ: \"ਖਾਣਾ\", \"ਪੀਣਾ\", \"ਸੋਣਾ\", \"ਕੰਮ ਕਰਨਾ\"।",
             "romanEnglish": "Let's learn daily verbs: eat, drink, sleep, work."
-          }
+          },
+          "question": "List any one daily activity mentioned:",
+          "options": [],
+          "correctAnswers": ["khana", "pina", "sona", "kam karna"]
         }
       ]
     }
