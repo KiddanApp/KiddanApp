@@ -28,34 +28,6 @@ class AnswerRequest(BaseModel):
     character_id: str = "bibi"
     answer: str
 
-@router.get("/{character_key}")
-async def get_character_lessons(character_key: str, service: LessonService = Depends(get_lesson_service)):
-    """
-    Get lesson data for a specific character.
-
-    Args:
-        character_key: The character identifier (e.g., 'bibi', 'chacha')
-
-    Returns:
-        JSON object containing all lessons for the character
-    """
-    try:
-        lesson_data = await service.get_character_lessons(character_key)
-
-        if not lesson_data:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Lesson data not found for character: {character_key}"
-            )
-
-        return lesson_data.model_dump()
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error loading lessons for character {character_key}: {str(e)}"
-        )
-
 @router.post("/start")
 async def start_lesson(
     request: StartLessonRequest,
@@ -148,3 +120,31 @@ async def submit_answer(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error submitting answer: {str(e)}")
+
+@router.get("/{character_key}")
+async def get_character_lessons(character_key: str, service: LessonService = Depends(get_lesson_service)):
+    """
+    Get lesson data for a specific character.
+
+    Args:
+        character_key: The character identifier (e.g., 'bibi', 'chacha')
+
+    Returns:
+        JSON object containing all lessons for the character
+    """
+    try:
+        lesson_data = await service.get_character_lessons(character_key)
+
+        if not lesson_data:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Lesson data not found for character: {character_key}"
+            )
+
+        return lesson_data.model_dump()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error loading lessons for character {character_key}: {str(e)}"
+        )

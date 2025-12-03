@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Optional, Dict, List, Any
 from pathlib import Path
 
@@ -66,12 +67,34 @@ class SimplifiedLessonService:
 
         correct_answers = step.get("correctAnswers", [])
 
-        # For text inputs, if no correctAnswers, consider it a typing exercise
-        # For simplicity, accept if not empty or something
+        # For text inputs, if no correctAnswers, try to extract expected answer from message
         if lesson_type == "text" and not correct_answers:
-            # For text, perhaps check if user_answer is not empty
-            # Or if it matches the prompt, but since no prompt, for now accept
-            return {"valid": True, "advance": True, "feedback": "Good"}
+            character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
+            # Extract text in quotes after "Likho:" or "Type in Roman Punjabi:" phrases
+            # Match text in quotes
+            match = re.search(r'"([^"]+)"', character_message)
+            if match:
+                expected = match.group(1).strip('""').lower().strip()
+                if expected and user_answer.strip().lower() == expected:
+                    return {"valid": True, "advance": True, "feedback": "Correct!"}
+                else:
+                    return {
+                        "valid": False,
+                        "advance": False,
+                        "feedback": f"Incorrect. Expected: {character_message}",
+                        "retry": True
+                    }
+            else:
+                # No quotes found, accept any non-empty answer
+                if user_answer.strip():
+                    return {"valid": True, "advance": True, "feedback": "Accepted"}
+                else:
+                    return {
+                        "valid": False,
+                        "advance": False,
+                        "feedback": "Please provide an answer",
+                        "retry": True
+                    }
 
         if not correct_answers:
             # No correct answers defined
