@@ -29,25 +29,15 @@
           "options": ["Sat Sri Akal", "Namaste", "Hello", "Salaam"],
           "correctAnswers": ["Sat Sri Akal"]
         },
+        
         {
           "lessonType": "text",
           "characterMessage": {
-            "romanPunjabi": "Arey oye, Punjabi vich \"Sat Sri Akal\" kehnde ne. Fer koshish karo.",
-            "gurmukhi": "ਅਰੇ ਓਏ, ਪੰਜਾਬੀ ਵਿੱਚ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ\" ਕਹਿੰਦੇ ਨੇ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
-            "romanEnglish": "In Punjabi we say \"Sat Sri Akal.\" Try again."
-          },
-          "question": "Type the correct Punjabi greeting:",
-          "options": [],
-          "correctAnswers": ["Sat Sri Akal"]
-        },
-        {
-          "lessonType": "text",
-          "characterMessage": {
-            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi SSA kaho.",
+            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi Sat Sri Akal kaho.",
             "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
-            "romanEnglish": "Very good! Now you say SSA too."
+            "romanEnglish": "Very good! Now you say Sat Sri Akal too."
           },
-          "question": "Type: Sat Sri Akal",
+          "question": "Type: Sat Sr`i Akal",
           "options": [],
           "correctAnswers": ["Sat Sri Akal"]
         },
@@ -67,19 +57,9 @@
           ],
           "correctAnswers": ["Main theek haan.", "Theek aa ji."]
         },
+       
         {
-          "lessonType": "text",
-          "characterMessage": {
-            "romanPunjabi": "Thoda jeha galat. \"Main theek haan\" ya \"Theek aa ji.\" Chalo fer.",
-            "gurmukhi": "ਥੋੜਾ ਜਿਹਾ ਗਲਤ। \"ਮੈਂ ਠੀਕ ਹਾਂ\" ਜਾਂ \"ਠੀਕ ਆ ਜੀ।\" ਚਲੋ ਫਿਰ।",
-            "romanEnglish": "Slightly off. Use \"Main theek haan\" or \"Theek aa ji.\" Try again."
-          },
-          "question": "Type the correct answer:",
-          "options": [],
-          "correctAnswers": ["Main theek haan", "Theek aa ji"]
-        },
-        {
-          "lessonType": "text",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Shabash mere sher! 💕",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼ ਮੇਰੇ ਸ਼ੇਰ! 💕",
@@ -112,7 +92,7 @@
           "correctAnswers": ["Sat Sri Akal, Bibi ji."]
         },
         {
-          "lessonType": "text",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Wah! Akhar vi sahi, tehziib vi sahi. 👏",
             "gurmukhi": "ਵਾਹ! ਅੱਖਰ ਵੀ ਸਹੀ, ਤਹਜ਼ੀਬ ਵੀ ਸਹੀ। 👏",
@@ -145,7 +125,7 @@
           "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
         },
         {
-          "lessonType": "text",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Haye meri akalmand! 💐",
             "gurmukhi": "ਹਾਏ ਮੇਰੀ ਅਕਲਮੰਦ! 💐",
@@ -167,7 +147,7 @@
           "correctAnswers": ["Sat Sri Akal!"]
         },
         {
-          "lessonType": "text",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Rozana sab ton vadh varton wali gall \"Sat Sri Akal!\" hi hai.",
             "gurmukhi": "ਰੋਜ਼ਾਨਾ ਸਭ ਤੋਂ ਵੱਧ ਵਰਤੋਂ ਵਾਲੀ ਗੱਲ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ!\" ਹੀ ਹੈ।",
@@ -178,7 +158,7 @@
           "correctAnswers": []
         },
         {
-          "lessonType": "text",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Bahut khub! Tussi sikh gaye basic greetings! 🎉",
             "gurmukhi": "ਬਹੁਤ ਖੂਬ! ਤੁਸੀਂ ਸਿੱਖ ਗਏ ਬੇਸਿਕ ਗ੍ਰੀਟਿੰਗਜ਼! 🎉",
