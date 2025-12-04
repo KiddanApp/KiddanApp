@@ -8,6 +8,7 @@
       "steps": [
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Sat Sri Akal, puttar! 🙏",
             "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਪੁੱਤਰ! 🙏",
@@ -20,6 +21,7 @@
         },
         {
           "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Assi Punjabi vich hello kivein kehnde haan?",
             "gurmukhi": "ਅਸੀਂ ਪੰਜਾਬੀ ਵਿੱਚ ਹੈਲੋ ਕਿਵੇਂ ਕਹਿੰਦੇ ਹਾਂ?",
@@ -29,9 +31,9 @@
           "options": ["Sat Sri Akal", "Namaste", "Hello", "Salaam"],
           "correctAnswers": ["Sat Sri Akal"]
         },
-        
         {
           "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi Sat Sri Akal kaho.",
             "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
@@ -43,6 +45,7 @@
         },
         {
           "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Je main puchhan \"Ki haal hai?\", tusi kiven jawab doge?",
             "gurmukhi": "ਜੇ ਮੈਂ ਪੁੱਛਾਂ \"ਕੀ ਹਾਲ ਹੈ?\", ਤੁਸੀਂ ਕਿਵੇਂ ਜਵਾਬ ਦੋਗੇ?",
@@ -57,9 +60,9 @@
           ],
           "correctAnswers": ["Main theek haan.", "Theek aa ji."]
         },
-       
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Shabash mere sher! 💕",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼ ਮੇਰੇ ਸ਼ੇਰ! 💕",
@@ -71,6 +74,7 @@
         },
         {
           "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Hun typing di practice. Likho: \"Sat Sri Akal, Bibi ji.\"",
             "gurmukhi": "ਹੁਣ ਟਾਈਪਿੰਗ ਦੀ ਪ੍ਰੈਕਟਿਸ। ਲਿਖੋ: \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\"",
@@ -82,6 +86,7 @@
         },
         {
           "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Thoda typos ne. \"Sat Sri Akal, Bibi ji.\" likho. Fer koshish karo.",
             "gurmukhi": "ਥੋੜੇ ਟਾਈਪੋ ਨੇ। \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\" ਲਿਖੋ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
@@ -93,6 +98,7 @@
         },
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Wah! Akhar vi sahi, tehziib vi sahi. 👏",
             "gurmukhi": "ਵਾਹ! ਅੱਖਰ ਵੀ ਸਹੀ, ਤਹਜ਼ੀਬ ਵੀ ਸਹੀ। 👏",
@@ -104,6 +110,7 @@
         },
         {
           "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Hun ik hor: \"Ki tusi theek ho, Bibi ji?\"",
             "gurmukhi": "ਹੁਣ ਇਕ ਹੋਰ: \"ਕੀ ਤੁਸੀਂ ਠੀਕ ਹੋ, ਬੀਬੀ ਜੀ?\"",
@@ -115,6 +122,7 @@
         },
         {
           "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Sawaal ch \"Ki\" pehlan aunda. Dubara likho ji.",
             "gurmukhi": "ਸਵਾਲ ਵਿੱਚ \"ਕੀ\" ਪਹਿਲਾਂ ਆਉਂਦਾ। ਦੁਬਾਰਾ ਲਿਖੋ ਜੀ।",
@@ -126,6 +134,7 @@
         },
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Haye meri akalmand! 💐",
             "gurmukhi": "ਹਾਏ ਮੇਰੀ ਅਕਲਮੰਦ! 💐",
@@ -137,6 +146,7 @@
         },
         {
           "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Last quiz: \"Good morning\" de vadle dincharya vich kehnde haan...",
             "gurmukhi": "ਆਖਰੀ ਕਵਿਜ਼: \"Good morning\" ਦੇ ਵਦਲੇ ਦਿਨਚਰਿਆ ਵਿੱਚ ਕਹਿੰਦੇ ਹਾਂ...",
@@ -148,6 +158,7 @@
         },
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Rozana sab ton vadh varton wali gall \"Sat Sri Akal!\" hi hai.",
             "gurmukhi": "ਰੋਜ਼ਾਨਾ ਸਭ ਤੋਂ ਵੱਧ ਵਰਤੋਂ ਵਾਲੀ ਗੱਲ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ!\" ਹੀ ਹੈ।",
@@ -159,6 +170,7 @@
         },
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Bahut khub! Tussi sikh gaye basic greetings! 🎉",
             "gurmukhi": "ਬਹੁਤ ਖੂਬ! ਤੁਸੀਂ ਸਿੱਖ ਗਏ ਬੇਸਿਕ ਗ੍ਰੀਟਿੰਗਜ਼! 🎉",
@@ -177,6 +189,7 @@
       "steps": [
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Chalo khandaan de naavan sikhiye. \"Maa\" ki hunda?",
             "gurmukhi": "ਚਲੋ ਖ਼ਾਨਦਾਨ ਦੇ ਨਾਵਾਂ ਸਿੱਖੀਏ। \"ਮਾਂ\" ਕੀ ਹੁੰਦਾ?",
@@ -195,6 +208,7 @@
       "steps": [
         {
           "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Aao rozana de kaam: \"khana\", \"pina\", \"sona\", \"kam karna\".",
             "gurmukhi": "ਆਓ ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ: \"ਖਾਣਾ\", \"ਪੀਣਾ\", \"ਸੋਣਾ\", \"ਕੰਮ ਕਰਨਾ\"।",
