@@ -4,117 +4,94 @@
   "lessons": [
     {
       "id": "vyapaari-lesson-1",
-      "characterId": "vyapaari",
       "title": "Numbers & Negotiation",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 500,
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Soda vyapar kariye. Keemat gallbat!",
             "gurmukhi": "ਸੋਦਾ ਵਿਆਪਾਰ ਕਰੀਏ। ਕੀਮਤ ਗੱਲਬਾਤ!",
-            "romanEnglish": "Let's bargain.",
-            "audioUrl": "vyap_l1_s1.mp3"
+            "romanEnglish": "Let's bargain."
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step2",
-          "trigger": "auto",
-          "delay": 900,
+          "lessonType": "text",
           "characterMessage": {
             "romanPunjabi": "Translate: \"How much for this?\"",
             "gurmukhi": "ਅਨੁਵਾਦ: \"ਇਹਦਾ ਕਿੰਨਾ ਰੇਟ?\"",
-            "romanEnglish": "Translate.",
-            "audioUrl": "vyap_l1_s2.mp3"
+            "romanEnglish": "Translate."
           },
-          "lessonType": "text-input",
+          "question": "",
+          "options": [],
           "correctAnswers": [
             "ehda kinne paise?",
             "ehda kinna rate?",
             "ehda kinni kimat?"
-          ],
-          "hints": ["\"kinna/kinne\" vary by noun; any acceptable."],
-          "branching": { "onCorrect": "step3", "onIncorrect": "step2-retry" }
+          ]
         },
         {
-          "id": "step2-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "\"Ehda kinna/kinne\" changa lagda.",
+            "romanPunjabi": "\"Ehda kinna/kinne\" best lagda.",
             "gurmukhi": "\"ਇਹਦਾ ਕਿੰਨਾ/ਕਿੰਨੇ\" ਚੰਗਾ ਲੱਗਦਾ।",
-            "romanEnglish": "Use \"ehda kinna/kinne.\"",
-            "audioUrl": "vyap_l1_s2r.mp3"
+            "romanEnglish": "Use 'ehda kinna/kinne'."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step3"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step3",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "Theek! Hun kehna: \"Thoda ghatao ji.\"",
-            "gurmukhi": "ਠੀਕ! ਹੁਣ ਕਹਿਣਾ: \"ਥੋੜਾ ਘਟਾਓ ਜੀ।\"",
-            "romanEnglish": "Now ask for discount.",
-            "audioUrl": "vyap_l1_s3.mp3"
+            "romanPunjabi": "Theek! Hun kaho: \"Thoda ghatao ji.\"",
+            "gurmukhi": "ਠੀਕ! ਹੁਣ ਕਹੋ: \"ਥੋੜਾ ਘਟਾਓ ਜੀ।\"",
+            "romanEnglish": "Now say: 'Thoda ghatao ji.'"
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step4",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "mcq",
           "characterMessage": {
             "romanPunjabi": "Select the polite negotiating line:",
             "gurmukhi": "ਨਮਰ ਨੇਗੋਸ਼ੀਏਸ਼ਨ ਲਾਈਨ ਚੁਣੋ:",
-            "romanEnglish": "Pick one.",
-            "audioUrl": "vyap_l1_s4.mp3"
+            "romanEnglish": "Pick one."
           },
-          "lessonType": "multiple-choice",
           "question": "Best line?",
           "options": [
             "Bahut mehnga aa!",
             "Thoda discount ho sakda ji?",
             "Nahi chahida."
           ],
-          "correctAnswers": ["Thoda discount ho sakda ji?"],
-          "branching": { "onCorrect": "step5", "onIncorrect": "step4-retry" }
+          "correctAnswers": ["Thoda discount ho sakda ji?"]
         },
         {
-          "id": "step4-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "\"Ji\" naal meetha lagda.",
-            "gurmukhi": "\"ਜੀ\" ਨਾਲ ਮੀਠਾ ਲੱਗਦਾ।",
-            "romanEnglish": "Add \"ji\".",
-            "audioUrl": "vyap_l1_s4r.mp3"
+            "romanPunjabi": "\"Ji\" naal sab kuch meetha lagda.",
+            "gurmukhi": "\"ਜੀ\" ਨਾਲ ਸਭ ਕੁਝ ਮੀਠਾ ਲੱਗਦਾ।",
+            "romanEnglish": "Add 'ji' for politeness."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step5",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Shabash! Tussi vyapar sikhe! 💼",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼! ਤੁਸੀਂ ਵਿਆਪਾਰ ਸਿੱਖੇ! 💼",
-            "romanEnglish": "Well done! You learned business!",
-            "audioUrl": "vyap_l1_s5.mp3"
+            "romanEnglish": "Well done! You learned business!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "lesson-complete"
-        },
-        {
-          "id": "lesson-complete",
-          "trigger": "auto",
-          "delay": 500,
-          "lessonType": "completion",
-          "nextStepId": null
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         }
       ]
     }
   ]
-        {
+}

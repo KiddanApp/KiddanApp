@@ -4,108 +4,85 @@
   "lessons": [
     {
       "id": "nihang-lesson-1",
-      "characterId": "nihang",
       "title": "Commands & Discipline",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 500,
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Waheguru ji ka Khalsa, Waheguru ji ki Fateh! Line vich kharrho!",
             "gurmukhi": "ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ! ਲਾਈਨ ਵਿੱਚ ਖੜ੍ਹੋ!",
             "romanEnglish": "Formal greeting. Stand in line!",
-            "audioUrl": "nihang_l1_s1.mp3",
             "culturalNote": "Traditional Sikh salutation."
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step2",
-          "trigger": "auto",
-          "delay": 900,
+          "lessonType": "text",
           "characterMessage": {
             "romanPunjabi": "Translate command: \"Start practice!\"",
             "gurmukhi": "ਅਨੁਵਾਦ: \"ਪ੍ਰੈਕਟਿਸ ਸ਼ੁਰੂ ਕਰੋ!\"",
-            "romanEnglish": "Translate.",
-            "audioUrl": "nihang_l1_s2.mp3"
+            "romanEnglish": "Translate."
           },
-          "lessonType": "text-input",
-          "correctAnswers": ["practice shuru karo", "abhyas shuru karo"],
-          "hints": ["Use \"shuru karo\"."],
-          "branching": { "onCorrect": "step3", "onIncorrect": "step2-retry" }
+          "question": "",
+          "options": [],
+          "correctAnswers": ["practice shuru karo", "abhyas shuru karo"]
         },
         {
-          "id": "step2-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "Command form \"karo/jao/chalo\". Dubara.",
-            "gurmukhi": "ਕਮਾਂਡ ਫਾਰਮ \"ਕਰੋ/ਜਾਓ/ਚੱਲੋ\"।",
-            "romanEnglish": "Use command form.",
-            "audioUrl": "nihang_l1_s2r.mp3"
+            "romanPunjabi": "Command form \"karo/jao/chalo\". Dubara yaad rakho.",
+            "gurmukhi": "ਕਮਾਂਡ ਫਾਰਮ \"ਕਰੋ/ਜਾਓ/ਚੱਲੋ\"। ਯਾਦ ਰੱਖੋ।",
+            "romanEnglish": "Use the command form."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step3",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Chak de phatte! Hun \"Tez chalo!\"",
             "gurmukhi": "ਚੱਕ ਦੇ ਫੱਟੇ! ਹੁਣ \"ਤੇਜ਼ ਚੱਲੋ!\"",
-            "romanEnglish": "Now: \"Walk fast!\"",
-            "audioUrl": "nihang_l1_s3.mp3"
+            "romanEnglish": "Now: Walk fast!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step4",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "mcq",
           "characterMessage": {
             "romanPunjabi": "Choose best response to coach:",
             "gurmukhi": "ਕੋਚ ਨੂੰ ਸਭ ਤੋਂ ਵਧੀਆ ਜਵਾਬ ਚੁਣੋ:",
-            "romanEnglish": "Pick respectful reply.",
-            "audioUrl": "nihang_l1_s4.mp3"
+            "romanEnglish": "Pick respectful reply."
           },
-          "lessonType": "multiple-choice",
           "question": "When ordered \"Line vich kharrho!\" you say…",
           "options": ["Theek aa!", "Ji, coach!", "Haan veere!"],
-          "correctAnswers": ["Ji, coach!"],
-          "branching": { "onCorrect": "step5", "onIncorrect": "step4-retry" }
+          "correctAnswers": ["Ji, coach!"]
         },
         {
-          "id": "step4-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "Respect naal \"Ji, coach!\"",
-            "gurmukhi": "ਰਿਸਪੈਕਟ ਨਾਲ \"ਜੀ, ਕੋਚ!\"",
-            "romanEnglish": "Say \"Ji, coach!\"",
-            "audioUrl": "nihang_l1_s4r.mp3"
+            "romanPunjabi": "Respect naal \"Ji, coach!\" kehna.",
+            "gurmukhi": "ਰਿਸਪੈਕਟ ਨਾਲ \"ਜੀ, ਕੋਚ!\" ਕਹਿਣਾ।",
+            "romanEnglish": "Say 'Ji, coach!' respectfully."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step5",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Balle! Tussi discipline sikhi! ⚔️",
             "gurmukhi": "ਬੱਲੇ! ਤੁਸੀਂ ਡਿਸਿਪਲਿਨ ਸਿੱਖੀ! ⚔️",
-            "romanEnglish": "Great! You learned discipline!",
-            "audioUrl": "nihang_l1_s5.mp3"
+            "romanEnglish": "Great! You learned discipline!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "lesson-complete"
-        },
-        {
-          "id": "lesson-complete",
-          "trigger": "auto",
-          "delay": 500,
-          "lessonType": "completion",
-          "nextStepId": null
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         }
       ]
     }

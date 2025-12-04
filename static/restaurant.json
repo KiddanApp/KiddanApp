@@ -4,149 +4,118 @@
   "lessons": [
     {
       "id": "restaurant-lesson-1",
-      "characterId": "restaurant",
       "title": "Ordering Food",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 500,
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Sat Sri Akal ji! Tuhanu ki serve kariye?",
             "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਜੀ! ਤੁਹਾਨੂੰ ਕੀ ਸਰਵ ਕਰੀਏ?",
-            "romanEnglish": "Hello! What can I serve you?",
-            "audioUrl": "rest_l1_s1.mp3"
+            "romanEnglish": "Hello! What can I serve you?"
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step2",
-          "trigger": "auto",
-          "delay": 900,
+          "lessonType": "text",
           "characterMessage": {
-            "romanPunjabi": "Kirpa karke ik order type karo: 1 butter chicken, 2 naan, 1 lassi.",
-            "gurmukhi": "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਬਟਰ ਚਿਕਨ, ਦੋ ਨਾਨ, ਇੱਕ ਲੱਸੀ—ਆਰਡਰ ਲਿਖੋ।",
-            "romanEnglish": "Please type an order for 1 butter chicken, 2 naan, and 1 lassi.",
-            "audioUrl": "rest_l1_s2.mp3"
+            "romanPunjabi": "Type an order: 1 butter chicken, 2 naan, 1 lassi.",
+            "gurmukhi": "ਟਾਈਪ ਕਰੋ: ਇੱਕ ਬਟਰ ਚਿਕਨ, ਦੋ ਨਾਨ, ਇੱਕ ਲੱਸੀ।",
+            "romanEnglish": "Type the order."
           },
-          "lessonType": "text-input",
+          "question": "",
+          "options": [],
           "correctAnswers": [
-            "kirpa karke ik butter chicken, do naan te ik lassi de deo ji",
-            "kirpa karke ik butter chicken do naan ate ik lassi de deo ji"
-          ],
-          "hints": [
-            "Use \"kirpa karke … ji\" for politeness.",
-            "Join items with \"te/ate\"."
-          ],
-          "branching": { "onCorrect": "step3", "onIncorrect": "step2-retry" }
+            "kirpa karke ik butter chicken do naan te ik lassi de deo ji",
+            "kirpa karke ik butter chicken, do naan te ik lassi de deo ji"
+          ]
         },
         {
-          "id": "step2-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "Order vich \"kirpa karke … ji\" changa lagda. Dubara likho.",
-            "gurmukhi": "ਆਰਡਰ ਵਿੱਚ \"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਵਧੀਆ ਲੱਗਦਾ। ਦੁਬਾਰਾ ਲਿਖੋ।",
-            "romanEnglish": "Start with \"kirpa karke\" and end with \"ji\". Try again.",
-            "audioUrl": "rest_l1_s2r.mp3"
+            "romanPunjabi": "Order vich \"kirpa karke … ji\" polite lagda. Dubara yaad rakho.",
+            "gurmukhi": "ਆਰਡਰ ਵਿੱਚ \"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਨਮਰ ਲੱਗਦਾ।",
+            "romanEnglish": "Use 'kirpa karke … ji' for politeness."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step3",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Bahut sohni boli! Spice level kinna?",
             "gurmukhi": "ਬਹੁਤ ਸੋਹਣੀ ਬੋਲੀ! ਮਿਰਚ ਕਿੰਨੀ?",
-            "romanEnglish": "Lovely! How spicy?",
-            "audioUrl": "rest_l1_s3.mp3"
+            "romanEnglish": "Nice! How spicy?"
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step4",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "mcq",
           "characterMessage": {
             "romanPunjabi": "Choose your spice level:",
             "gurmukhi": "ਮਿਰਚ ਦੀ ਲੇਵਲ ਚੁਣੋ:",
-            "romanEnglish": "Choose a spice level.",
-            "audioUrl": "rest_l1_s4.mp3"
+            "romanEnglish": "Choose spice level."
           },
-          "lessonType": "multiple-choice",
           "question": "Mirch kinna?",
           "options": ["Bilkul halka (mild)", "Medi (medium)", "Teekha (spicy)"],
           "correctAnswers": [
             "Bilkul halka (mild)",
             "Medi (medium)",
             "Teekha (spicy)"
-          ],
-          "branching": { "onCorrect": "step5", "onIncorrect": "step5" }
+          ]
         },
         {
-          "id": "step5",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Theek aa ji! Hun bill mangna sikho.",
             "gurmukhi": "ਠੀਕ ਆ ਜੀ! ਹੁਣ ਬਿੱਲ ਮੰਗਣਾ ਸਿੱਖੋ।",
-            "romanEnglish": "Great! Now learn to ask for the bill.",
-            "audioUrl": "rest_l1_s5.mp3"
+            "romanEnglish": "Great! Now ask for the bill."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step6"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step6",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "text",
           "characterMessage": {
             "romanPunjabi": "Type: \"Kirpa karke bill bana deo, ji.\"",
             "gurmukhi": "ਲਿਖੋ: \"ਕਿਰਪਾ ਕਰਕੇ ਬਿੱਲ ਬਣਾ ਦੇਓ, ਜੀ।\"",
-            "romanEnglish": "Ask for the bill politely.",
-            "audioUrl": "rest_l1_s6.mp3"
+            "romanEnglish": "Type politely."
           },
-          "lessonType": "text-input",
+          "question": "",
+          "options": [],
           "correctAnswers": [
             "kirpa karke bill bana deo ji",
             "kirpa karke bill bana deo, ji"
-          ],
-          "hints": ["Comma before \"ji\" optional."],
-          "branching": { "onCorrect": "step7", "onIncorrect": "step6-retry" }
+          ]
         },
         {
-          "id": "step6-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
-            "romanPunjabi": "\"Kirpa karke … ji\" nal full politeness aundi. Dubara.",
-            "gurmukhi": "\"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਨਾਲ ਪੂਰੀ ਨਮਰਤਾ ਆਉਂਦੀ। ਦੁਬਾਰਾ।",
-            "romanEnglish": "Use \"kirpa karke … ji\". Try again.",
-            "audioUrl": "rest_l1_s6r.mp3"
+            "romanPunjabi": "\"Kirpa karke … ji\" nal full politeness aundi.",
+            "gurmukhi": "\"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਨਾਲ ਪੂਰੀ ਨਮਰਤਾ ਆਉਂਦੀ।",
+            "romanEnglish": "Use the full polite phrase."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step6"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step7",
-          "trigger": "user-response",
+          "lessonType": "info",
           "characterMessage": {
             "romanPunjabi": "Shabash! Tussi restaurant order sikhe! 🍽️",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼! ਤੁਸੀਂ ਰੈਸਟੋਰੈਂਟ ਆਰਡਰ ਸਿੱਖੇ! 🍽️",
-            "romanEnglish": "Well done! You learned restaurant ordering!",
-            "audioUrl": "rest_l1_s7.mp3"
+            "romanEnglish": "Good! You learned restaurant ordering!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "lesson-complete"
-        },
-        {
-          "id": "lesson-complete",
-          "trigger": "auto",
-          "delay": 500,
-          "lessonType": "completion",
-          "nextStepId": null
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         }
       ]
     }
-    ]
+  ]
 }
