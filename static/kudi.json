@@ -1,0 +1,119 @@
+{
+  "characterId": "kudi",
+  "characterName": "Pind Di Kudi",
+  "lessons": [
+    {
+      "id": "kudi-lesson-1",
+      "characterId": "kudi",
+      "title": "Informal Chat & Slang",
+      "steps": [
+        {
+          "id": "step1",
+          "trigger": "auto",
+          "delay": 500,
+          "characterMessage": {
+            "romanPunjabi": "Oye hello ji! Tusi kithon ho?",
+            "gurmukhi": "ਓਏ ਹੈਲੋ ਜੀ! ਤੁਸੀਂ ਕਿੱਥੋਂ ਹੋ?",
+            "romanEnglish": "Hi! Where are you from?",
+            "audioUrl": "kudi_l1_s1.mp3"
+          },
+          "lessonType": "info",
+          "nextStepId": "step2"
+        },
+        {
+          "id": "step2",
+          "trigger": "auto",
+          "delay": 800,
+          "characterMessage": {
+            "romanPunjabi": "Choose the flirty-but-polite reply:",
+            "gurmukhi": "ਥੋੜ੍ਹਾ ਨਟਖਟ ਪਰ ਨਮਰ ਜਵਾਬ ਚੁਣੋ:",
+            "romanEnglish": "Choose.",
+            "audioUrl": "kudi_l1_s2.mp3"
+          },
+          "lessonType": "multiple-choice",
+          "question": "Reply to \"Tusi kithon ho?\"",
+          "options": [
+            "Main London ton haan. Tusi?",
+            "Tera ki matlab?",
+            "Chal bye."
+          ],
+          "correctAnswers": ["Main London ton haan. Tusi?"],
+          "branching": { "onCorrect": "step3", "onIncorrect": "step2-retry" }
+        },
+        {
+          "id": "step2-retry",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Thoda rude si. Polite raho.",
+            "gurmukhi": "ਥੋੜ੍ਹਾ ਰੂਡ ਸੀ। ਨਮਰ ਰਹੋ।",
+            "romanEnglish": "Be polite.",
+            "audioUrl": "kudi_l1_s2r.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step2"
+        },
+        {
+          "id": "step3",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Cute! Hun emoji vi jod do 😉",
+            "gurmukhi": "ਕਿਊਟ! ਹੁਣ ਇਮੋਜੀ ਵੀ ਜੋੜ ਦੋ 😉",
+            "romanEnglish": "Add an emoji.",
+            "audioUrl": "kudi_l1_s3.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step4"
+        },
+        {
+          "id": "step4",
+          "trigger": "auto",
+          "delay": 700,
+          "characterMessage": {
+            "romanPunjabi": "Type: \"Main theek aa, tusi daso?\"",
+            "gurmukhi": "ਲਿਖੋ: \"ਮੈਂ ਠੀਕ ਆ, ਤੁਸੀਂ ਦੱਸੋ?\"",
+            "romanEnglish": "Type a friendly check-in.",
+            "audioUrl": "kudi_l1_s4.mp3"
+          },
+          "lessonType": "text-input",
+          "correctAnswers": [
+            "main theek aa, tusi daso?",
+            "main thik aa, tusi dasso?"
+          ],
+          "hints": ["Comma + question mark."],
+          "branching": { "onCorrect": "step5", "onIncorrect": "step4-retry" }
+        },
+        {
+          "id": "step4-retry",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "\"Tusi daso?\" na bhulna.",
+            "gurmukhi": "\"ਤੁਸੀਂ ਦੱਸੋ?\" ਨਾ ਭੁਲਣਾ।",
+            "romanEnglish": "Don't forget \"tusi daso?\"",
+            "audioUrl": "kudi_l1_s4r.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step4"
+        },
+        {
+          "id": "step5",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Wah! Tussi cool Punjabi sikhi! 😎",
+            "gurmukhi": "ਵਾਹ! ਤੁਸੀਂ ਕੂਲ ਪੰਜਾਬੀ ਸਿੱਖੀ! 😎",
+            "romanEnglish": "Wow! You learned cool Punjabi!",
+            "audioUrl": "kudi_l1_s5.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "lesson-complete"
+        },
+        {
+          "id": "lesson-complete",
+          "trigger": "auto",
+          "delay": 500,
+          "lessonType": "completion",
+          "nextStepId": null
+        }
+      ]
+    }
+  ]
+}

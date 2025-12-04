@@ -1,0 +1,119 @@
+{
+  "characterId": "shopkeeper",
+  "characterName": "Dukandaar Ji",
+  "lessons": [
+    {
+      "id": "shopkeeper-lesson-1",
+      "characterId": "shopkeeper",
+      "title": "Buying Essentials",
+      "steps": [
+        {
+          "id": "step1",
+          "trigger": "auto",
+          "delay": 500,
+          "characterMessage": {
+            "romanPunjabi": "Satsriakal ji! Ki chahida?",
+            "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਜੀ! ਕੀ ਚਾਹੀਦਾ?",
+            "romanEnglish": "Hello! What do you need?",
+            "audioUrl": "shop_l1_s1.mp3"
+          },
+          "lessonType": "info",
+          "nextStepId": "step2"
+        },
+        {
+          "id": "step2",
+          "trigger": "auto",
+          "delay": 800,
+          "characterMessage": {
+            "romanPunjabi": "Type: \"Do kilo atta te ik packet namak.\"",
+            "gurmukhi": "ਲਿਖੋ: \"ਦੋ ਕਿਲੋ ਆਟਾ ਤੇ ਇੱਕ ਪੈਕੇਟ ਨਮਕ।\"",
+            "romanEnglish": "Type an order.",
+            "audioUrl": "shop_l1_s2.mp3"
+          },
+          "lessonType": "text-input",
+          "correctAnswers": [
+            "do kilo atta te ik packet namak",
+            "2 kilo atta te 1 packet namak"
+          ],
+          "hints": ["Numbers acceptable as digits."],
+          "branching": { "onCorrect": "step3", "onIncorrect": "step2-retry" }
+        },
+        {
+          "id": "step2-retry",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Order vich \"te\" nal jodo.",
+            "gurmukhi": "ਆਰਡਰ ਵਿੱਚ \"ਤੇ\" ਨਾਲ ਜੋੜੋ।",
+            "romanEnglish": "Join items with \"te\".",
+            "audioUrl": "shop_l1_s2r.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step2"
+        },
+        {
+          "id": "step3",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Ho gaya ji! Bag ch paa dena?",
+            "gurmukhi": "ਹੋ ਗਿਆ ਜੀ! ਬੈਗ ਚ ਪਾ ਦੇਣਾ?",
+            "romanEnglish": "Shall I bag it?",
+            "audioUrl": "shop_l1_s3.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step4"
+        },
+        {
+          "id": "step4",
+          "trigger": "auto",
+          "delay": 700,
+          "characterMessage": {
+            "romanPunjabi": "Choose: Bill Punjabi vich kivein mangoge?",
+            "gurmukhi": "ਚੁਣੋ: ਬਿੱਲ ਪੰਜਾਬੀ ਵਿੱਚ ਕਿਵੇਂ ਮੰਗੋਗੇ?",
+            "romanEnglish": "How to ask for the bill?",
+            "audioUrl": "shop_l1_s4.mp3"
+          },
+          "lessonType": "multiple-choice",
+          "question": "Pick one:",
+          "options": [
+            "Bill de de",
+            "Kirpa karke bill bana deo, ji",
+            "Money bolo"
+          ],
+          "correctAnswers": ["Kirpa karke bill bana deo, ji"],
+          "branching": { "onCorrect": "step5", "onIncorrect": "step4-retry" }
+        },
+        {
+          "id": "step4-retry",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Polite bano: \"kirpa karke… ji\".",
+            "gurmukhi": "ਨਮਰ ਬਣੋ: \"ਕਿਰਪਾ ਕਰਕੇ… ਜੀ\"।",
+            "romanEnglish": "Be polite.",
+            "audioUrl": "shop_l1_s4r.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "step4"
+        },
+        {
+          "id": "step5",
+          "trigger": "user-response",
+          "characterMessage": {
+            "romanPunjabi": "Vadhia! Tussi shopping sikhi! 🛍️",
+            "gurmukhi": "ਵਧੀਆ! ਤੁਸੀਂ ਸ਼ਾਪਿੰਗ ਸਿੱਖੀ! 🛍️",
+            "romanEnglish": "Great! You learned shopping!",
+            "audioUrl": "shop_l1_s5.mp3"
+          },
+          "lessonType": "feedback",
+          "nextStepId": "lesson-complete"
+        },
+        {
+          "id": "lesson-complete",
+          "trigger": "auto",
+          "delay": 500,
+          "lessonType": "completion",
+          "nextStepId": null
+        }
+      ]
+    }
+  ]
+}

@@ -66,7 +66,7 @@ class SimplifiedLessonService:
                 "data": step,
                 "advance": True
             }
-        elif lesson_type in ["mcq", "text"]:
+        elif lesson_type in ["mcq", "multiple-choice", "text", "text-input"]:
             # Return question, wait for answer
             return {
                 "type": "question",
@@ -96,7 +96,7 @@ class SimplifiedLessonService:
         correct_answers = step.get("correctAnswers", [])
 
         # For text inputs, if no correctAnswers, try to extract expected answer from message
-        if lesson_type == "text" and not correct_answers:
+        if lesson_type in ["text", "text-input"] and not correct_answers:
             character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
             # Extract text in quotes after "Likho:" or "Type in Roman Punjabi:" phrases
             # Match text in quotes
