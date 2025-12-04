@@ -5,27 +5,49 @@ from pathlib import Path
 
 class SimplifiedLessonService:
     def __init__(self):
-        self.lesson_data = self._load_lesson_data()
+        self.lessons_by_character = self._load_lesson_data()
 
-    def _load_lesson_data(self) -> Dict[str, Any]:
-        """Load lesson data from static/bibi.json"""
-        file_path = Path(__file__).parent.parent / ".." / "static" / "bibi.json"
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            raise Exception(f"Error loading lesson data: {str(e)}")
+    def _load_lesson_data(self) -> Dict[str, Dict[str, Any]]:
+        """Load lesson data from all static JSON files"""
+        static_dir = Path(__file__).parent.parent / ".." / "static"
+        lessons_data = {}
 
-    def get_lesson_by_index(self, lesson_index: int) -> Optional[Dict[str, Any]]:
-        """Get lesson by index"""
-        lessons = self.lesson_data.get("lessons", [])
+        character_files = [
+            "bibi.json",
+            "chacha.json",
+            "kudi.json",
+            "nihang.json",
+            "resturant.json",  # Note: keeping as is, matches actual filename
+            "shopkeeper.json",
+            "vyapaari.json"
+        ]
+
+        for filename in character_files:
+            file_path = static_dir / filename
+            character_id = filename.replace(".json", "")
+
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    lessons_data[character_id] = json.load(f)
+            except Exception as e:
+                print(f"Error loading {filename}: {str(e)}")
+                lessons_data[character_id] = {"characterId": character_id, "characterName": "", "lessons": []}
+
+        return lessons_data
+
+    def get_lesson_by_index(self, lesson_index: int, character_id: str) -> Optional[Dict[str, Any]]:
+        """Get lesson by index for a character"""
+        character_data = self.lessons_by_character.get(character_id)
+        if not character_data:
+            return None
+        lessons = character_data.get("lessons", [])
         if lesson_index >= len(lessons):
             return None
         return lessons[lesson_index]
 
-    def get_next_interaction(self, current_lesson_index: int, current_step_index: int) -> Optional[Dict[str, Any]]:
-        """Get the next interaction (question or info) by indices"""
-        lesson = self.get_lesson_by_index(current_lesson_index)
+    def get_next_interaction(self, current_lesson_index: int, current_step_index: int, character_id: str) -> Optional[Dict[str, Any]]:
+        """Get the next interaction (question or info) by indices for a character"""
+        lesson = self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"type": "completed"}
 
@@ -58,9 +80,9 @@ class SimplifiedLessonService:
                 "advance": True
             }
 
-    def validate_answer(self, current_lesson_index: int, current_step_index: int, user_answer: str) -> Dict[str, Any]:
-        """Validate user answer and return result"""
-        lesson = self.get_lesson_by_index(current_lesson_index)
+    def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
+        """Validate user answer and return result for a character"""
+        lesson = self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "error": "Lesson not found"}
 
@@ -120,3 +142,7 @@ class SimplifiedLessonService:
             "feedback": step.get("characterMessage", {}).get("romanEnglish", "Incorrect"),
             "retry": True
         }
+
+    def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
+        """Get the full character lesson data"""
+        return self.lessons_by_character.get(character_id)

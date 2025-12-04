@@ -62,7 +62,7 @@ async def get_next(
             raise HTTPException(status_code=404, detail="Lessons not started. Call /lessons/start first.")
 
         # Get next interaction
-        interaction = lesson_service.get_next_interaction(progress.current_lesson_index, progress.current_step_index)
+        interaction = lesson_service.get_next_interaction(progress.current_lesson_index, progress.current_step_index, character_id)
 
         if interaction["type"] == "completed":
             # All lessons completed
@@ -110,14 +110,14 @@ async def submit_answer(
 
         # Validate answer
         result = lesson_service.validate_answer(
-            progress.current_lesson_index, progress.current_step_index, request.answer
+            progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer
         )
 
         if result["valid"] and result["advance"]:
             # Advance to next step
             new_step_index = progress.current_step_index + 1
             # Check if this completes the lesson
-            lesson = lesson_service.get_lesson_by_index(progress.current_lesson_index)
+            lesson = lesson_service.get_lesson_by_index(progress.current_lesson_index, request.character_id)
             if lesson and new_step_index >= len(lesson["steps"]):
                 # Lesson completed, advance to next lesson
                 new_lesson_index = progress.current_lesson_index + 1
@@ -139,7 +139,7 @@ async def submit_answer(
         raise HTTPException(status_code=500, detail=f"Error submitting answer: {str(e)}")
 
 @router.get("/{character_key}")
-async def get_character_lessons(character_key: str, service: LessonService = Depends(get_lesson_service)):
+async def get_character_lessons(character_key: str, service: SimplifiedLessonService = Depends(get_simplified_lesson_service)):
     """
     Get lesson data for a specific character.
 
@@ -150,7 +150,7 @@ async def get_character_lessons(character_key: str, service: LessonService = Dep
         JSON object containing all lessons for the character
     """
     try:
-        lesson_data = await service.get_character_lessons(character_key)
+        lesson_data = service.get_character_data(character_key)
 
         if not lesson_data:
             raise HTTPException(
@@ -158,7 +158,7 @@ async def get_character_lessons(character_key: str, service: LessonService = Dep
                 detail=f"Lesson data not found for character: {character_key}"
             )
 
-        return lesson_data.model_dump()
+        return lesson_data
 
     except Exception as e:
         raise HTTPException(
