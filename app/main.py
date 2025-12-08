@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from starlette.middleware.sessions import SessionMiddleware
 import os
 from contextlib import asynccontextmanager
 
-from app.routers import characters, chat, lessons, admin
+from app.routers import characters, chat, lessons, admin, auth
 from app.db import get_database
 from app.services.character_service import CharacterService
 from app.models import Character, LessonData
@@ -68,6 +69,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="PunjabiTutor Backend – Phase 1", lifespan=lifespan)
 
+# Add session middleware
+app.add_middleware(SessionMiddleware, secret_key="your-secret-key-change-in-production")
+
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
 static_dir = os.path.abspath(static_dir)
@@ -85,6 +89,7 @@ app.add_middleware(
 app.include_router(characters.router, prefix="/characters", tags=["characters"])
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
 app.include_router(lessons.router, prefix="/lessons", tags=["lessons"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(admin.router, tags=["admin"])
 
 @app.get("/admin")

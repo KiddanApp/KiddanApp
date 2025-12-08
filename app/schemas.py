@@ -18,3 +18,16 @@ class ChatReply(BaseModel):
     conversation_id: str
     expression: str
     reply: Dict[str, str]  # {"english": ..., "roman": ..., "gurmukhi": ...}
+
+class UserSignup(BaseModel):
+    email: str
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserOut(BaseModel):
+    id: str
+    email: str
+    created_at: str

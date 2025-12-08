@@ -7,3 +7,5 @@ python-dotenv
 motor
 pytest
 google-generativeai
+passlib[bcrypt]
+itsdangerous

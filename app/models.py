@@ -59,3 +59,9 @@ class Character(BaseModel):
     prompt_style: Optional[str] = None
     emotion_map: Optional[Dict[str, str]] = None
     conversation_topics: Optional[List[str]] = None
+
+class User(BaseModel):
+    id: Optional[str] = None
+    email: str
+    hashed_password: str
+    created_at: datetime = datetime.utcnow()
