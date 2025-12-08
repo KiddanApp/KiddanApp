@@ -49,7 +49,7 @@ async def login(
         key="user_id",
         value=user.id,
         httponly=True,
-        secure=False,  # Set to True in production with HTTPS
+        secure=False,  
         samesite="lax"
     )
     return UserOut(
@@ -63,12 +63,13 @@ async def logout(response: Response):
     response.delete_cookie(key="user_id")
     return {"message": "Logged out successfully"}
 
-@router.get("/me", response_model=UserOut)
+@router.get("/me"/{user_id}, response_model=UserOut)
 async def get_current_user(
+    user_id: str,
     request: Request,
     service: UserService = Depends(get_user_service)
 ):
-    user_id = request.cookies.get("user_id")
+    
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
