@@ -15,6 +15,12 @@ class UserService:
 
     def hash_password(self, password: str) -> str:
         """Hash a password"""
+        # bcrypt has a 72-byte limit, so truncate if necessary
+        password_bytes = password.encode('utf-8')
+        if len(password_bytes) > 72:
+            # Truncate to 72 bytes and decode back to string
+            truncated_bytes = password_bytes[:72]
+            password = truncated_bytes.decode('utf-8', errors='ignore')
         return pwd_context.hash(password)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
