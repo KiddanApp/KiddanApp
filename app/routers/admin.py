@@ -206,38 +206,8 @@ async def sync_lessons_from_static(
                     "steps": []
                 }
 
-                for step_index, step in enumerate(lesson["steps"]):
-                    transformed_step = {
-                        "id": f"step{step_index + 1}",  # Generate step ID
-                        "trigger": "auto",  # Default trigger
-                        "delay": 500,  # Default delay
-                        "lessonType": step["lessonType"],
-                        "question": step.get("question", ""),
-                        "options": step.get("options", []),
-                        "correctAnswers": step.get("correctAnswers", [])
-                    }
-
-                    # Handle characterMessage for info steps
-                    if step.get("characterMessage"):
-                        transformed_step["characterMessage"] = {
-                            "romanPunjabi": step["characterMessage"].get("romanPunjabi", ""),
-                            "gurmukhi": step["characterMessage"].get("gurmukhi", ""),
-                            "romanEnglish": step["characterMessage"].get("romanEnglish", ""),
-                            "culturalNote": step["characterMessage"].get("culturalNote", "")
-                        }
-                    else:
-                        transformed_step["characterMessage"] = {
-                            "romanPunjabi": "",
-                            "gurmukhi": "",
-                            "romanEnglish": "",
-                            "culturalNote": ""
-                        }
-
-                    # Handle emotion field
-                    if "emotion" in step:
-                        transformed_step["emotion"] = step["emotion"]
-
-                    transformed_lesson["steps"].append(transformed_step)
+                # Keep the steps exactly as they are in the original JSON
+                transformed_lesson["steps"] = lesson["steps"]
 
                 transformed_data["lessons"].append(transformed_lesson)
 
