@@ -193,8 +193,8 @@
                 <div class="flex-grow-1">
                     <select class="form-select form-select-sm step-type mb-2" style="width: auto; display: inline-block;">
                         <option value="info">Info</option>
-                        <option value="multiple-choice">Multiple Choice</option>
-                        <option value="text-input">Text Input</option>
+                        <option value="mcq">Multiple Choice</option>
+                        <option value="text">Text Input</option>
                         <option value="feedback">Feedback</option>
                         <option value="completion">Completion</option>
                     </select>
@@ -407,17 +407,17 @@
                 characterId: currentCharacterId,
                 title: title,
                 steps: [{
-                    id: 'step1',
-                    trigger: 'auto',
-                    delay: 500,
+                    lessonType: 'info',
+                    emotion: 'happy',
                     characterMessage: {
                         romanPunjabi: 'Welcome to this lesson!',
                         gurmukhi: 'ਇਸ ਲੈਸਨ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ!',
                         romanEnglish: 'Welcome to this lesson!',
-                        culturalNote: 'Basic greeting in Punjabi'
+                        additionalNotes: 'Basic greeting in Punjabi'
                     },
-                    lessonType: 'info',
-                    nextStepId: null
+                    question: '',
+                    options: [],
+                    correctAnswers: []
                 }]
             };
 
@@ -529,12 +529,12 @@
                             <textarea class="form-control form-control-sm" rows="2" data-field="romanEnglish">${step.characterMessage?.romanEnglish || ''}</textarea>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">Cultural Note (optional)</label>
-                            <input type="text" class="form-control form-control-sm" value="${step.characterMessage?.culturalNote || ''}" data-field="culturalNote">
+                            <label class="form-label">Additional Notes (optional)</label>
+                            <input type="text" class="form-control form-control-sm" value="${step.characterMessage?.additionalNotes || ''}" data-field="additionalNotes">
                         </div>
                     `;
                     break;
-                case 'multiple-choice':
+                case 'mcq':
                     content = `
                         <div class="mb-2">
                             <label class="form-label">Question</label>
@@ -550,7 +550,7 @@
                         </div>
                     `;
                     break;
-                case 'text-input':
+                case 'text':
                     content = `
                         <div class="mb-2">
                             <label class="form-label">Question/Prompt</label>
@@ -586,17 +586,17 @@
         // Add new step
         function addNewStep() {
             const newStep = {
-                id: `step${Date.now()}`,
-                trigger: 'auto',
-                delay: 500,
+                lessonType: 'info',
+                emotion: '',
                 characterMessage: {
                     romanPunjabi: '',
                     gurmukhi: '',
                     romanEnglish: '',
-                    culturalNote: ''
+                    additionalNotes: ''
                 },
-                lessonType: 'info',
-                nextStepId: null
+                question: '',
+                options: [],
+                correctAnswers: []
             };
 
             const stepElement = createStepElement(newStep);
@@ -620,10 +620,11 @@
                 const stepType = stepCard.find('.step-type').val();
 
                 const step = {
-                    id: `step${index + 1}`,
-                    trigger: 'auto',
-                    delay: 500,
-                    lessonType: stepType
+                    lessonType: stepType,
+                    emotion: '',
+                    question: '',
+                    options: [],
+                    correctAnswers: []
                 };
 
                 // Collect step-specific data
@@ -633,17 +634,26 @@
                             romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
                             gurmukhi: stepCard.find('[data-field="gurmukhi"]').val(),
                             romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
-                            culturalNote: 'Cultural note here'
+                            additionalNotes: stepCard.find('[data-field="additionalNotes"]').val()
                         };
                         break;
-                    case 'multiple-choice':
+                    case 'mcq':
                         step.question = stepCard.find('[data-field="question"]').val();
                         step.options = stepCard.find('[data-field="options"]').val().split('\n').filter(opt => opt.trim());
                         step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
                         break;
-                    case 'text-input':
+                    case 'text':
                         step.question = stepCard.find('[data-field="question"]').val();
                         step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
+                        break;
+                    case 'feedback':
+                    case 'completion':
+                        step.characterMessage = {
+                            romanPunjabi: stepCard.find('[data-field="characterMessage.romanPunjabi"]').val(),
+                            gurmukhi: '',
+                            romanEnglish: '',
+                            additionalNotes: ''
+                        };
                         break;
                 }
 
