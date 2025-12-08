@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 from app.schemas import UserSignup, UserLogin, UserOut
-from app.db import get_database
+from app.database import get_db
 from app.services.user_service import UserService
 
 router = APIRouter()
 
-def get_user_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> UserService:
-    return UserService(db)
+def get_user_service(session: AsyncSession = Depends(get_db)) -> UserService:
+    return UserService(session)
 
 @router.post("/signup", response_model=UserOut)
 async def signup(

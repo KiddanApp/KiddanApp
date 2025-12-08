@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from app.routers import characters, chat, lessons, admin, auth
 from app.db import get_database
+from app.database import engine, Base
 from app.services.character_service import CharacterService
 from app.models import Character, LessonData
 import json
@@ -15,15 +16,21 @@ from pathlib import Path
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Seed database if empty
+    # Startup: Create tables and seed database if empty
     try:
+        # Create PostgreSQL tables
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("PostgreSQL tables created!")
+
+        # MongoDB seeding
         db = await get_database()
         char_service = CharacterService(db)
 
         # Check if characters exist
         existing_chars = await char_service.get_all_characters()
         if not existing_chars:
-            print("Database empty, seeding data...")
+            print("MongoDB database empty, seeding data...")
 
             # Seed characters
             char_path = Path(__file__).parent / "seed" / "characters.json"

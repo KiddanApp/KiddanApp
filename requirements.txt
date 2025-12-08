@@ -5,6 +5,9 @@ pydantic-settings
 httpx
 python-dotenv
 motor
+sqlalchemy
+asyncpg
+psycopg2-binary
 pytest
 google-generativeai
 passlib[bcrypt]
