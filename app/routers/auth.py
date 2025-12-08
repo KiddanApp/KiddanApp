@@ -63,7 +63,7 @@ async def logout(response: Response):
     response.delete_cookie(key="user_id")
     return {"message": "Logged out successfully"}
 
-@router.get("/me"/{user_id}, response_model=UserOut)
+@router.get("/me/{user_id}", response_model=UserOut)
 async def get_current_user(
     user_id: str,
     request: Request,
