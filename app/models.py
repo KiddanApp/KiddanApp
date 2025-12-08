@@ -60,8 +60,18 @@ class Character(BaseModel):
     emotion_map: Optional[Dict[str, str]] = None
     conversation_topics: Optional[List[str]] = None
 
+<<<<<<< HEAD
 class User(BaseModel):
     id: Optional[str] = None
     email: str
     hashed_password: str
     created_at: datetime = datetime.utcnow()
+=======
+class UserLessonProgress(BaseModel):
+    user_id: str
+    character_id: str
+    current_lesson_index: int = 0  # Index in character's lessons array
+    current_step_index: int = 0    # Index in current lesson's steps array
+    completed: bool = False
+    id: Optional[str] = None
+>>>>>>> bee69de6c1d24e17956aca2eb45dae4dc39bf174

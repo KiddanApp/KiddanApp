@@ -4,74 +4,53 @@
   "lessons": [
     {
       "id": "bibi-lesson-1",
-      "characterId": "bibi",
       "title": "Basic Greetings",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 500,
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Sat Sri Akal, puttar! 🙏",
             "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਪੁੱਤਰ! 🙏",
             "romanEnglish": "Sat Sri Akal, child!",
-            "culturalNote": "\"Sat Sri Akal\" (SSA) is the common Sikh greeting meaning \"God is the Eternal Truth.\""
+            "culturalNote": "\"Sat Sri Akal\" (SSA) means \"God is the Eternal Truth.\""
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step2",
-          "trigger": "auto",
-          "delay": 1200,
+          "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Assi Punjabi vich hello kivein kehnde haan?",
             "gurmukhi": "ਅਸੀਂ ਪੰਜਾਬੀ ਵਿੱਚ ਹੈਲੋ ਕਿਵੇਂ ਕਹਿੰਦੇ ਹਾਂ?",
             "romanEnglish": "How do we say hello in Punjabi?"
           },
-          "lessonType": "multiple-choice",
           "question": "Choose the correct Punjabi greeting:",
           "options": ["Sat Sri Akal", "Namaste", "Hello", "Salaam"],
-          "correctAnswers": ["Sat Sri Akal"],
-          "branching": {
-            "onCorrect": "step3",
-            "onIncorrect": "step2-retry"
-          }
+          "correctAnswers": ["Sat Sri Akal"]
         },
         {
-          "id": "step2-retry",
-          "trigger": "user-response",
+          "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
-            "romanPunjabi": "Arey oye, Punjabi vich \"Sat Sri Akal\" kehnde ne. Fer koshish karo.",
-            "gurmukhi": "ਅਰੇ ਓਏ, ਪੰਜਾਬੀ ਵਿੱਚ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ\" ਕਹਿੰਦੇ ਨੇ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
-            "romanEnglish": "In Punjabi we say \"Sat Sri Akal.\" Try again.",
-            "culturalNote": "\"Namaste\" (Hindi) and \"Salaam\" (Urdu/Arabic) are used in other contexts."
-          },
-          "lessonType": "feedback",
-          "nextStepId": "step2"
-        },
-        {
-          "id": "step3",
-          "trigger": "user-response",
-          "characterMessage": {
-            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi SSA kaho.",
+            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi Sat Sri Akal kaho.",
             "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
-            "romanEnglish": "Very good! Now you say SSA too."
+            "romanEnglish": "Very good! Now you say Sat Sri Akal too."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
+          "question": "Type: Sat Sri Akal",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal"]
         },
         {
-          "id": "step4",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Je main puchhan \"Ki haal hai?\", tusi kiven jawab doge?",
             "gurmukhi": "ਜੇ ਮੈਂ ਪੁੱਛਾਂ \"ਕੀ ਹਾਲ ਹੈ?\", ਤੁਸੀਂ ਕਿਵੇਂ ਜਵਾਬ ਦੋਗੇ?",
-            "romanEnglish": "If I ask \"How are you?\", how will you reply?",
-            "culturalNote": "\"Ji\" adds respect or politeness."
+            "romanEnglish": "If I ask \"How are you?\", how will you reply?"
           },
-          "lessonType": "multiple-choice",
           "question": "Select the best reply:",
           "options": [
             "Main theek haan.",
@@ -79,198 +58,165 @@
             "Hanji",
             "Theek aa ji."
           ],
-          "correctAnswers": ["Main theek haan.", "Theek aa ji."],
-          "branching": { "onCorrect": "step5", "onIncorrect": "step4-retry" }
+          "correctAnswers": ["Main theek haan.", "Theek aa ji."]
         },
         {
-          "id": "step4-retry",
-          "trigger": "user-response",
-          "characterMessage": {
-            "romanPunjabi": "Thoda jeha galat. \"Main theek haan\" ya \"Theek aa ji.\" Chalo fer.",
-            "gurmukhi": "ਥੋੜਾ ਜਿਹਾ ਗਲਤ। \"ਮੈਂ ਠੀਕ ਹਾਂ\" ਜਾਂ \"ਠੀਕ ਆ ਜੀ।\" ਚਲੋ ਫਿਰ।",
-            "romanEnglish": "Slightly off. Use \"Main theek haan\" or \"Theek aa ji.\" Try again."
-          },
-          "lessonType": "feedback",
-          "nextStepId": "step4"
-        },
-        {
-          "id": "step5",
-          "trigger": "user-response",
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Shabash mere sher! 💕",
             "gurmukhi": "ਸ਼ਾਬਾਸ਼ ਮੇਰੇ ਸ਼ੇਰ! 💕",
             "romanEnglish": "Well done, champ!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "step6"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step6",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Hun typing di practice. Likho: \"Sat Sri Akal, Bibi ji.\"",
             "gurmukhi": "ਹੁਣ ਟਾਈਪਿੰਗ ਦੀ ਪ੍ਰੈਕਟਿਸ। ਲਿਖੋ: \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\"",
-            "romanEnglish": "Now a typing drill. Type: \"Sat Sri Akal, Bibi ji.\"",
-            "audioUrl": "bibi_l1_s6.mp3"
+            "romanEnglish": "Now a typing drill. Type: \"Sat Sri Akal, Bibi ji.\""
           },
-          "lessonType": "text-input",
-          "question": "Type the correct sentence:",
-          "correctAnswers": ["sat sri akal, bibi ji.", "sat sri akaal, bibi ji."],
-          "hints": ["Don't forget the comma and \"ji\"."],
-          "branching": { "onCorrect": "step7", "onIncorrect": "step6-retry" }
+          "question": "Type: Sat Sri Akal, Bibi ji.",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
         },
         {
-          "id": "step6-retry",
-          "trigger": "user-response",
+          "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Thoda typos ne. \"Sat Sri Akal, Bibi ji.\" likho. Fer koshish karo.",
             "gurmukhi": "ਥੋੜੇ ਟਾਈਪੋ ਨੇ। \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\" ਲਿਖੋ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
             "romanEnglish": "Some typos. Type \"Sat Sri Akal, Bibi ji.\" again."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step6"
+          "question": "Retype correctly:",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
         },
         {
-          "id": "step7",
-          "trigger": "user-response",
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Wah! Akhar vi sahi, tehziib vi sahi. 👏",
             "gurmukhi": "ਵਾਹ! ਅੱਖਰ ਵੀ ਸਹੀ, ਤਹਜ਼ੀਬ ਵੀ ਸਹੀ। 👏",
             "romanEnglish": "Great! Spelling and politeness both correct."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step8"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step8",
-          "trigger": "auto",
-          "delay": 700,
+          "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Hun ik hor: \"Ki tusi theek ho, Bibi ji?\"",
             "gurmukhi": "ਹੁਣ ਇਕ ਹੋਰ: \"ਕੀ ਤੁਸੀਂ ਠੀਕ ਹੋ, ਬੀਬੀ ਜੀ?\"",
             "romanEnglish": "One more: \"Are you fine, Bibi ji?\""
           },
-          "lessonType": "text-input",
           "question": "Type in Roman Punjabi:",
-          "correctAnswers": [
-            "ki tusi theek ho, bibi ji?",
-            "ki tusi thik ho, bibi ji?"
-          ],
-          "hints": ["Start with \"Ki\". Add question mark."],
-          "branching": { "onCorrect": "step9", "onIncorrect": "step8-retry" }
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
         },
         {
-          "id": "step8-retry",
-          "trigger": "user-response",
+          "lessonType": "text",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Sawaal ch \"Ki\" pehlan aunda. Dubara likho ji.",
             "gurmukhi": "ਸਵਾਲ ਵਿੱਚ \"ਕੀ\" ਪਹਿਲਾਂ ਆਉਂਦਾ। ਦੁਬਾਰਾ ਲਿਖੋ ਜੀ।",
-            "romanEnglish": "In questions, \"Ki\" comes first. Try again.",
-            "audioUrl": "bibi_l1_s8r.mp3"
+            "romanEnglish": "In questions, \"Ki\" comes first. Try again."
           },
-          "lessonType": "feedback",
-          "nextStepId": "step8"
+          "question": "Rewrite the question correctly:",
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
         },
         {
-          "id": "step9",
-          "trigger": "user-response",
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Haye meri akalmand! 💐",
             "gurmukhi": "ਹਾਏ ਮੇਰੀ ਅਕਲਮੰਦ! 💐",
             "romanEnglish": "So smart!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "step10"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step10",
-          "trigger": "auto",
-          "delay": 600,
+          "lessonType": "mcq",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Last quiz: \"Good morning\" de vadle dincharya vich kehnde haan...",
             "gurmukhi": "ਆਖਰੀ ਕਵਿਜ਼: \"Good morning\" ਦੇ ਵਦਲੇ ਦਿਨਚਰਿਆ ਵਿੱਚ ਕਹਿੰਦੇ ਹਾਂ...",
-            "romanEnglish": "Last quiz: A casual \"Good morning\" in Punjabi is...",
-            "culturalNote": "SSA works across morning/day/evening among Sikhs.",
-            "audioUrl": "bibi_l1_s10.mp3"
+            "romanEnglish": "Last quiz: A casual \"Good morning\" in Punjabi is..."
           },
-          "lessonType": "multiple-choice",
           "question": "Pick the most natural:",
           "options": ["Sat Sri Akal!", "Subah di sat sri akal!", "Namaste ji!"],
-          "correctAnswers": ["Sat Sri Akal!"],
-          "branching": {
-            "onCorrect": "step11",
-            "onIncorrect": "step10-retry"
-          }
+          "correctAnswers": ["Sat Sri Akal!"]
         },
         {
-          "id": "step10-retry",
-          "trigger": "user-response",
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Rozana sab ton vadh varton wali gall \"Sat Sri Akal!\" hi hai.",
             "gurmukhi": "ਰੋਜ਼ਾਨਾ ਸਭ ਤੋਂ ਵੱਧ ਵਰਤੋਂ ਵਾਲੀ ਗੱਲ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ!\" ਹੀ ਹੈ।",
-            "romanEnglish": "The most common everyday choice is \"Sat Sri Akal!\"",
-            "audioUrl": "bibi_l1_s10r.mp3"
+            "romanEnglish": "The most common everyday choice is \"Sat Sri Akal!\""
           },
-          "lessonType": "feedback",
-          "nextStepId": "step10"
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         },
         {
-          "id": "step11",
-          "trigger": "user-response",
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Bahut khub! Tussi sikh gaye basic greetings! 🎉",
             "gurmukhi": "ਬਹੁਤ ਖੂਬ! ਤੁਸੀਂ ਸਿੱਖ ਗਏ ਬੇਸਿਕ ਗ੍ਰੀਟਿੰਗਜ਼! 🎉",
-            "romanEnglish": "Excellent! You learned basic greetings!",
-            "audioUrl": "bibi_l1_s11.mp3"
+            "romanEnglish": "Excellent! You learned basic greetings!"
           },
-          "lessonType": "feedback",
-          "nextStepId": "lesson-complete"
-        },
-        {
-          "id": "lesson-complete",
-          "trigger": "auto",
-          "delay": 500,
-          "lessonType": "completion",
-          "nextStepId": null
+          "question": "",
+          "options": [],
+          "correctAnswers": []
         }
       ]
     },
+
     {
       "id": "bibi-lesson-2",
-      "characterId": "bibi",
       "title": "Family Members",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 600,
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Chalo khandaan de naavan sikhiye. \"Maa\" ki hunda?",
             "gurmukhi": "ਚਲੋ ਖ਼ਾਨਦਾਨ ਦੇ ਨਾਵਾਂ ਸਿੱਖੀਏ। \"ਮਾਂ\" ਕੀ ਹੁੰਦਾ?",
             "romanEnglish": "Let's learn family words. What is \"Maa\"?"
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "Type the meaning of 'Maa' in English:",
+          "options": [],
+          "correctAnswers": ["Mother"]
         }
       ]
     },
+
     {
       "id": "bibi-lesson-3",
-      "characterId": "bibi",
       "title": "Daily Activities",
       "steps": [
         {
-          "id": "step1",
-          "trigger": "auto",
-          "delay": 500,
+          "lessonType": "info",
+          "emotion": "happy",
           "characterMessage": {
             "romanPunjabi": "Aao rozana de kaam: \"khana\", \"pina\", \"sona\", \"kam karna\".",
             "gurmukhi": "ਆਓ ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ: \"ਖਾਣਾ\", \"ਪੀਣਾ\", \"ਸੋਣਾ\", \"ਕੰਮ ਕਰਨਾ\"।",
             "romanEnglish": "Let's learn daily verbs: eat, drink, sleep, work."
           },
-          "lessonType": "info",
-          "nextStepId": "step2"
+          "question": "List any one daily activity mentioned:",
+          "options": [],
+          "correctAnswers": ["khana", "pina", "sona", "kam karna"]
         }
       ]
     }
