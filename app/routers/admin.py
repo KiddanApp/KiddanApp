@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.db import get_database
 from app.services.character_service import CharacterService
 from app.services.lesson_service import LessonService
-from app.models import Character, Lesson
+from app.models import Character, Lesson, LessonData
 from app.config import settings
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -153,3 +153,171 @@ async def get_character_lessons_admin(
     if not lessons:
         raise HTTPException(status_code=404, detail="Lessons not found for character")
     return lessons.model_dump()
+
+@router.delete("/lessons/clear-all")
+async def clear_all_lessons(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Clear all lessons from MongoDB"""
+    result = await db.lessons.delete_many({})
+    return {
+        "message": f"Cleared {result.deleted_count} lesson documents from database",
+        "deleted_count": result.deleted_count
+    }
+
+@router.post("/lessons/sync-from-static")
+async def sync_lessons_from_static(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Sync lessons from static folder to MongoDB"""
+    import json
+    from pathlib import Path
+
+    lesson_service = LessonService(db)
+    synced_count = 0
+    error_count = 0
+
+    # Path to static folder
+    static_path = Path(__file__).parent.parent.parent / "static"
+
+    for lesson_file in static_path.glob("*.json"):
+        if lesson_file.name == "admin.html":
+            continue
+
+        try:
+            with open(lesson_file, "r", encoding="utf-8") as f:
+                raw_data = json.load(f)
+
+            # Transform the data to match our LessonData model expectations
+            # Add missing fields to lessons and steps
+            transformed_data = {
+                "characterId": raw_data["characterId"],
+                "characterName": raw_data.get("characterName", ""),
+                "lessons": []
+            }
+
+            for lesson in raw_data["lessons"]:
+                transformed_lesson = {
+                    "id": lesson["id"],
+                    "characterId": raw_data["characterId"],  # Add characterId to each lesson
+                    "title": lesson["title"],
+                    "steps": []
+                }
+
+                for step_index, step in enumerate(lesson["steps"]):
+                    transformed_step = {
+                        "id": f"step{step_index + 1}",  # Generate step ID
+                        "trigger": "auto",  # Default trigger
+                        "delay": 500,  # Default delay
+                        "lessonType": step["lessonType"],
+                        "question": step.get("question", ""),
+                        "options": step.get("options", []),
+                        "correctAnswers": step.get("correctAnswers", [])
+                    }
+
+                    # Handle characterMessage for info steps
+                    if step.get("characterMessage"):
+                        transformed_step["characterMessage"] = {
+                            "romanPunjabi": step["characterMessage"].get("romanPunjabi", ""),
+                            "gurmukhi": step["characterMessage"].get("gurmukhi", ""),
+                            "romanEnglish": step["characterMessage"].get("romanEnglish", ""),
+                            "culturalNote": step["characterMessage"].get("culturalNote", "")
+                        }
+                    else:
+                        transformed_step["characterMessage"] = {
+                            "romanPunjabi": "",
+                            "gurmukhi": "",
+                            "romanEnglish": "",
+                            "culturalNote": ""
+                        }
+
+                    # Handle emotion field
+                    if "emotion" in step:
+                        transformed_step["emotion"] = step["emotion"]
+
+                    transformed_lesson["steps"].append(transformed_step)
+
+                transformed_data["lessons"].append(transformed_lesson)
+
+            lesson_doc = LessonData(**transformed_data)
+
+            # Delete existing lessons for this character
+            await db.lessons.delete_many({"characterId": lesson_doc.characterId})
+
+            # Insert new lessons
+            await db.lessons.insert_one(lesson_doc.model_dump())
+            synced_count += 1
+            print(f"Synced lessons for character: {lesson_doc.characterId}")
+
+        except Exception as e:
+            error_count += 1
+            print(f"Error syncing {lesson_file.name}: {e}")
+
+    return {
+        "message": f"Synced {synced_count} lesson files, {error_count} errors",
+        "synced_count": synced_count,
+        "error_count": error_count
+    }
+
+# Step management endpoints
+@router.put("/lessons/{character_id}/{lesson_id}/steps/{step_index}")
+async def update_lesson_step(
+    character_id: str,
+    lesson_id: str,
+    step_index: int,
+    step_data: Dict[str, Any],
+    service: LessonService = Depends(get_lesson_service),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Update a specific step within a lesson"""
+    success = await service.update_lesson_step(character_id, lesson_id, step_index, step_data)
+    if not success:
+        raise HTTPException(status_code=404, detail="Lesson or step not found")
+    return {"message": "Step updated successfully"}
+
+@router.post("/lessons/{character_id}/{lesson_id}/steps")
+async def add_lesson_step(
+    character_id: str,
+    lesson_id: str,
+    step_data: Dict[str, Any],
+    service: LessonService = Depends(get_lesson_service),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Add a new step to a lesson"""
+    success = await service.add_lesson_step(character_id, lesson_id, step_data)
+    if not success:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    return {"message": "Step added successfully"}
+
+@router.delete("/lessons/{character_id}/{lesson_id}/steps/{step_index}")
+async def delete_lesson_step(
+    character_id: str,
+    lesson_id: str,
+    step_index: int,
+    service: LessonService = Depends(get_lesson_service),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Delete a step from a lesson"""
+    success = await service.delete_lesson_step(character_id, lesson_id, step_index)
+    if not success:
+        raise HTTPException(status_code=404, detail="Lesson or step not found")
+    return {"message": "Step deleted successfully"}
+
+class ReorderStepsRequest(BaseModel):
+    step_indices: List[int]
+
+@router.post("/lessons/{character_id}/{lesson_id}/steps/reorder")
+async def reorder_lesson_steps(
+    character_id: str,
+    lesson_id: str,
+    request: ReorderStepsRequest,
+    service: LessonService = Depends(get_lesson_service),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Reorder steps within a lesson"""
+    success = await service.reorder_lesson_steps(character_id, lesson_id, request.step_indices)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to reorder steps")
+    return {"message": "Steps reordered successfully"}

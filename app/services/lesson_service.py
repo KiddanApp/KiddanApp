@@ -142,3 +142,121 @@ class LessonService:
             {"$set": {"lessons": [l.model_dump() for l in reordered_lessons]}}
         )
         return True
+
+    async def update_lesson_step(self, character_id: str, lesson_id: str, step_index: int, step_data: Dict[str, Any]) -> bool:
+        """Update a specific step within a lesson"""
+        existing = await self.collection.find_one({"characterId": character_id})
+        if not existing:
+            return False
+
+        lesson_doc = LessonData(**existing)
+        lessons = lesson_doc.lessons
+
+        # Find the lesson
+        for lesson in lessons:
+            if lesson.id == lesson_id:
+                if step_index < 0 or step_index >= len(lesson.steps):
+                    return False
+
+                # Update the step
+                step = lesson.steps[step_index]
+                for key, value in step_data.items():
+                    if hasattr(step, key):
+                        setattr(step, key, value)
+                break
+        else:
+            return False
+
+        # Save back to database
+        await self.collection.update_one(
+            {"characterId": character_id},
+            {"$set": {"lessons": [l.model_dump() for l in lessons]}}
+        )
+        return True
+
+    async def add_lesson_step(self, character_id: str, lesson_id: str, step_data: Dict[str, Any]) -> bool:
+        """Add a new step to a lesson"""
+        existing = await self.collection.find_one({"characterId": character_id})
+        if not existing:
+            return False
+
+        lesson_doc = LessonData(**existing)
+        lessons = lesson_doc.lessons
+
+        # Find the lesson
+        for lesson in lessons:
+            if lesson.id == lesson_id:
+                # Create new step
+                from app.models import LessonStep
+                new_step = LessonStep(**step_data)
+                lesson.steps.append(new_step)
+                break
+        else:
+            return False
+
+        # Save back to database
+        await self.collection.update_one(
+            {"characterId": character_id},
+            {"$set": {"lessons": [l.model_dump() for l in lessons]}}
+        )
+        return True
+
+    async def delete_lesson_step(self, character_id: str, lesson_id: str, step_index: int) -> bool:
+        """Delete a step from a lesson"""
+        existing = await self.collection.find_one({"characterId": character_id})
+        if not existing:
+            return False
+
+        lesson_doc = LessonData(**existing)
+        lessons = lesson_doc.lessons
+
+        # Find the lesson
+        for lesson in lessons:
+            if lesson.id == lesson_id:
+                if step_index < 0 or step_index >= len(lesson.steps):
+                    return False
+                lesson.steps.pop(step_index)
+                break
+        else:
+            return False
+
+        # Save back to database
+        await self.collection.update_one(
+            {"characterId": character_id},
+            {"$set": {"lessons": [l.model_dump() for l in lessons]}}
+        )
+        return True
+
+    async def reorder_lesson_steps(self, character_id: str, lesson_id: str, step_indices: List[int]) -> bool:
+        """Reorder steps within a lesson"""
+        existing = await self.collection.find_one({"characterId": character_id})
+        if not existing:
+            return False
+
+        lesson_doc = LessonData(**existing)
+        lessons = lesson_doc.lessons
+
+        # Find the lesson
+        for lesson in lessons:
+            if lesson.id == lesson_id:
+                if len(step_indices) != len(lesson.steps):
+                    return False
+
+                # Reorder steps
+                reordered_steps = []
+                for idx in step_indices:
+                    if idx < 0 or idx >= len(lesson.steps):
+                        return False
+                    reordered_steps.append(lesson.steps[idx])
+
+                lesson.steps = reordered_steps
+                break
+        else:
+            return False
+
+        # Save back to database
+        await self.collection.update_one(
+            {"characterId": character_id},
+            {"$set": {"lessons": [l.model_dump() for l in lessons]}}
+        )
+        return True

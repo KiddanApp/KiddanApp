@@ -46,13 +46,16 @@ async def lifespan(app: FastAPI):
                     except Exception as e:
                         print(f"Error seeding character {char_id}: {e}")
 
-            # Seed lessons
-            lessons_path = Path(__file__).parent / "seed" / "lessons"
+            # Seed lessons from static folder
+            lessons_path = Path(__file__).parent.parent / "static"
             if lessons_path.exists():
                 from app.services.lesson_service import LessonService
                 lesson_service = LessonService(db)
 
                 for lesson_file in lessons_path.glob("*.json"):
+                    if lesson_file.name == "admin.html":
+                        continue
+
                     try:
                         with open(lesson_file, "r", encoding="utf-8") as f:
                             lesson_data = json.load(f)
