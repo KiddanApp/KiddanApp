@@ -18,21 +18,15 @@ class CharacterMessage(BaseModel):
     romanPunjabi: Optional[str] = None
     gurmukhi: Optional[str] = None
     romanEnglish: Optional[str] = None
-    culturalNote: Optional[str] = None
-    audioUrl: Optional[str] = None
+    additionalNotes: Optional[str] = None
 
 class LessonStep(BaseModel):
-    id: str
-    trigger: str  # "auto", "user-response"
-    delay: Optional[int] = None
-    characterMessage: Optional[CharacterMessage] = None
     lessonType: str  # "info", "multiple-choice", "text-input", "feedback", "completion"
-    question: Optional[str] = None
-    options: Optional[List[str]] = None
-    correctAnswers: Optional[List[str]] = None
-    hints: Optional[List[str]] = None
-    branching: Optional[Dict[str, str]] = None  # {"onCorrect": "stepX", "onIncorrect": "stepY"}
-    nextStepId: Optional[str] = None
+    emotion: Optional[str] = None
+    characterMessage: Optional[CharacterMessage] = None
+    question: str
+    options: List[str]
+    correctAnswers: List[str]
 
 class Lesson(BaseModel):
     id: str
