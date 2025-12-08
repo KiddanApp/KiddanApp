@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from app.models import User
 from app.models_sql import UserSQL
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 class UserService:
     def __init__(self, session: AsyncSession):
@@ -15,12 +15,6 @@ class UserService:
 
     def hash_password(self, password: str) -> str:
         """Hash a password"""
-        # bcrypt has a 72-byte limit, so truncate if necessary
-        password_bytes = password.encode('utf-8')
-        if len(password_bytes) > 72:
-            # Truncate to 72 bytes and decode back to string
-            truncated_bytes = password_bytes[:72]
-            password = truncated_bytes.decode('utf-8', errors='ignore')
         return pwd_context.hash(password)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:

@@ -17,13 +17,7 @@ async def signup(
     service: UserService = Depends(get_user_service)
 ):
     try:
-        # Ensure password is within bcrypt limits
-        password = user_data.password
-        password_bytes = password.encode('utf-8')
-        if len(password_bytes) > 72:
-            password = password_bytes[:72].decode('utf-8', errors='ignore')
-
-        user = await service.create_user(user_data.email, password)
+        user = await service.create_user(user_data.email, user_data.password)
         # Set session
         response.set_cookie(
             key="user_id",
@@ -46,13 +40,7 @@ async def login(
     response: Response,
     service: UserService = Depends(get_user_service)
 ):
-    # Ensure password is within bcrypt limits for verification
-    password = user_data.password
-    password_bytes = password.encode('utf-8')
-    if len(password_bytes) > 72:
-        password = password_bytes[:72].decode('utf-8', errors='ignore')
-
-    user = await service.authenticate_user(user_data.email, password)
+    user = await service.authenticate_user(user_data.email, user_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
