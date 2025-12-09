@@ -1,43 +1,28 @@
-import json
-import re
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, Dict, List, Any
-from pathlib import Path
+import re
 
 class SimplifiedLessonService:
-    def __init__(self):
-        self.lessons_by_character = self._load_lesson_data()
+    def __init__(self, db: AsyncIOMotorDatabase):
+        self.db = db
+        from app.services.lesson_service import LessonService
+        self.lesson_service = LessonService(db)
+        self.lessons_by_character = {}  # Cache for loaded lessons
 
-    def _load_lesson_data(self) -> Dict[str, Dict[str, Any]]:
-        """Load lesson data from all static JSON files"""
-        static_dir = Path(__file__).parent.parent / ".." / "static"
-        lessons_data = {}
+    async def _get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
+        """Get character lesson data from MongoDB or cache"""
+        if character_id in self.lessons_by_character:
+            return self.lessons_by_character[character_id]
 
-        character_files = [
-            "bibi.json",
-            "chacha.json",
-            "kudi.json",
-            "nihang.json",
-            "resturant.json",  # Note: keeping as is, matches actual filename
-            "shopkeeper.json",
-            "vyapaari.json"
-        ]
+        lesson_data = await self.lesson_service.get_character_lessons(character_id)
+        if lesson_data:
+            self.lessons_by_character[character_id] = lesson_data.model_dump()
 
-        for filename in character_files:
-            file_path = static_dir / filename
-            character_id = filename.replace(".json", "")
+        return self.lessons_by_character[character_id]
 
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    lessons_data[character_id] = json.load(f)
-            except Exception as e:
-                print(f"Error loading {filename}: {str(e)}")
-                lessons_data[character_id] = {"characterId": character_id, "characterName": "", "lessons": []}
-
-        return lessons_data
-
-    def get_lesson_by_index(self, lesson_index: int, character_id: str) -> Optional[Dict[str, Any]]:
+    async def get_lesson_by_index(self, lesson_index: int, character_id: str) -> Optional[Dict[str, Any]]:
         """Get lesson by index for a character"""
-        character_data = self.lessons_by_character.get(character_id)
+        character_data = await self._get_character_data(character_id)
         if not character_data:
             return None
         lessons = character_data.get("lessons", [])
@@ -45,9 +30,9 @@ class SimplifiedLessonService:
             return None
         return lessons[lesson_index]
 
-    def get_next_interaction(self, current_lesson_index: int, current_step_index: int, character_id: str) -> Optional[Dict[str, Any]]:
+    async def get_next_interaction(self, current_lesson_index: int, current_step_index: int, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the next interaction (question or info) by indices for a character"""
-        lesson = self.get_lesson_by_index(current_lesson_index, character_id)
+        lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"type": "completed"}
 
@@ -80,9 +65,9 @@ class SimplifiedLessonService:
                 "advance": True
             }
 
-    def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
+    async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
         """Validate user answer and return result for a character"""
-        lesson = self.get_lesson_by_index(current_lesson_index, character_id)
+        lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "error": "Lesson not found"}
 
@@ -143,6 +128,6 @@ class SimplifiedLessonService:
             "retry": True
         }
 
-    def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
+    async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the full character lesson data"""
-        return self.lessons_by_character.get(character_id)
+        return await self._get_character_data(character_id)

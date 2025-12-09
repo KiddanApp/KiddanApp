@@ -1,0 +1,224 @@
+{
+  "characterId": "bibi",
+  "characterName": "Bibi Ji",
+  "lessons": [
+    {
+      "id": "bibi-lesson-1",
+      "title": "Basic Greetings",
+      "steps": [
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Sat Sri Akal, puttar! 🙏",
+            "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਪੁੱਤਰ! 🙏",
+            "romanEnglish": "Sat Sri Akal, child!",
+            "culturalNote": "\"Sat Sri Akal\" (SSA) means \"God is the Eternal Truth.\""
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Assi Punjabi vich hello kivein kehnde haan?",
+            "gurmukhi": "ਅਸੀਂ ਪੰਜਾਬੀ ਵਿੱਚ ਹੈਲੋ ਕਿਵੇਂ ਕਹਿੰਦੇ ਹਾਂ?",
+            "romanEnglish": "How do we say hello in Punjabi?"
+          },
+          "question": "Choose the correct Punjabi greeting:",
+          "options": ["Sat Sri Akal", "Namaste", "Hello", "Salaam"],
+          "correctAnswers": ["Sat Sri Akal"]
+        },
+        {
+          "lessonType": "text",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Bahut vadia! 👏 Hun tusi vi Sat Sri Akal kaho.",
+            "gurmukhi": "ਬਹੁਤ ਵਧੀਆ! 👏 ਹੁਣ ਤੁਸੀਂ ਵੀ ਐਸ ਐਸ ਏ ਕਹੋ।",
+            "romanEnglish": "Very good! Now you say Sat Sri Akal too."
+          },
+          "question": "Type: Sat Sri Akal",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal"]
+        },
+        {
+          "lessonType": "mcq",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Je main puchhan \"Ki haal hai?\", tusi kiven jawab doge?",
+            "gurmukhi": "ਜੇ ਮੈਂ ਪੁੱਛਾਂ \"ਕੀ ਹਾਲ ਹੈ?\", ਤੁਸੀਂ ਕਿਵੇਂ ਜਵਾਬ ਦੋਗੇ?",
+            "romanEnglish": "If I ask \"How are you?\", how will you reply?"
+          },
+          "question": "Select the best reply:",
+          "options": [
+            "Main theek haan.",
+            "Tusi kiven ho?",
+            "Hanji",
+            "Theek aa ji."
+          ],
+          "correctAnswers": ["Main theek haan.", "Theek aa ji."]
+        },
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Shabash mere sher! 💕",
+            "gurmukhi": "ਸ਼ਾਬਾਸ਼ ਮੇਰੇ ਸ਼ੇਰ! 💕",
+            "romanEnglish": "Well done, champ!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Hun typing di practice. Likho: \"Sat Sri Akal, Bibi ji.\"",
+            "gurmukhi": "ਹੁਣ ਟਾਈਪਿੰਗ ਦੀ ਪ੍ਰੈਕਟਿਸ। ਲਿਖੋ: \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\"",
+            "romanEnglish": "Now a typing drill. Type: \"Sat Sri Akal, Bibi ji.\""
+          },
+          "question": "Type: Sat Sri Akal, Bibi ji.",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
+        },
+        {
+          "lessonType": "text",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Thoda typos ne. \"Sat Sri Akal, Bibi ji.\" likho. Fer koshish karo.",
+            "gurmukhi": "ਥੋੜੇ ਟਾਈਪੋ ਨੇ। \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ, ਬੀਬੀ ਜੀ।\" ਲਿਖੋ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+            "romanEnglish": "Some typos. Type \"Sat Sri Akal, Bibi ji.\" again."
+          },
+          "question": "Retype correctly:",
+          "options": [],
+          "correctAnswers": ["Sat Sri Akal, Bibi ji."]
+        },
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Wah! Akhar vi sahi, tehziib vi sahi. 👏",
+            "gurmukhi": "ਵਾਹ! ਅੱਖਰ ਵੀ ਸਹੀ, ਤਹਜ਼ੀਬ ਵੀ ਸਹੀ। 👏",
+            "romanEnglish": "Great! Spelling and politeness both correct."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Hun ik hor: \"Ki tusi theek ho, Bibi ji?\"",
+            "gurmukhi": "ਹੁਣ ਇਕ ਹੋਰ: \"ਕੀ ਤੁਸੀਂ ਠੀਕ ਹੋ, ਬੀਬੀ ਜੀ?\"",
+            "romanEnglish": "One more: \"Are you fine, Bibi ji?\""
+          },
+          "question": "Type in Roman Punjabi:",
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
+        },
+        {
+          "lessonType": "text",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Sawaal ch \"Ki\" pehlan aunda. Dubara likho ji.",
+            "gurmukhi": "ਸਵਾਲ ਵਿੱਚ \"ਕੀ\" ਪਹਿਲਾਂ ਆਉਂਦਾ। ਦੁਬਾਰਾ ਲਿਖੋ ਜੀ।",
+            "romanEnglish": "In questions, \"Ki\" comes first. Try again."
+          },
+          "question": "Rewrite the question correctly:",
+          "options": [],
+          "correctAnswers": ["Ki tusi theek ho, Bibi ji?"]
+        },
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Haye meri akalmand! 💐",
+            "gurmukhi": "ਹਾਏ ਮੇਰੀ ਅਕਲਮੰਦ! 💐",
+            "romanEnglish": "So smart!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Last quiz: \"Good morning\" de vadle dincharya vich kehnde haan...",
+            "gurmukhi": "ਆਖਰੀ ਕਵਿਜ਼: \"Good morning\" ਦੇ ਵਦਲੇ ਦਿਨਚਰਿਆ ਵਿੱਚ ਕਹਿੰਦੇ ਹਾਂ...",
+            "romanEnglish": "Last quiz: A casual \"Good morning\" in Punjabi is..."
+          },
+          "question": "Pick the most natural:",
+          "options": ["Sat Sri Akal!", "Subah di sat sri akal!", "Namaste ji!"],
+          "correctAnswers": ["Sat Sri Akal!"]
+        },
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Rozana sab ton vadh varton wali gall \"Sat Sri Akal!\" hi hai.",
+            "gurmukhi": "ਰੋਜ਼ਾਨਾ ਸਭ ਤੋਂ ਵੱਧ ਵਰਤੋਂ ਵਾਲੀ ਗੱਲ \"ਸਤ ਸ੍ਰੀ ਅਕਾਲ!\" ਹੀ ਹੈ।",
+            "romanEnglish": "The most common everyday choice is \"Sat Sri Akal!\""
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Bahut khub! Tussi sikh gaye basic greetings! 🎉",
+            "gurmukhi": "ਬਹੁਤ ਖੂਬ! ਤੁਸੀਂ ਸਿੱਖ ਗਏ ਬੇਸਿਕ ਗ੍ਰੀਟਿੰਗਜ਼! 🎉",
+            "romanEnglish": "Excellent! You learned basic greetings!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        }
+      ]
+    },
+
+    {
+      "id": "bibi-lesson-2",
+      "title": "Family Members",
+      "steps": [
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Chalo khandaan de naavan sikhiye. \"Maa\" ki hunda?",
+            "gurmukhi": "ਚਲੋ ਖ਼ਾਨਦਾਨ ਦੇ ਨਾਵਾਂ ਸਿੱਖੀਏ। \"ਮਾਂ\" ਕੀ ਹੁੰਦਾ?",
+            "romanEnglish": "Let's learn family words. What is \"Maa\"?"
+          },
+          "question": "Type the meaning of 'Maa' in English:",
+          "options": [],
+          "correctAnswers": ["Mother"]
+        }
+      ]
+    },
+
+    {
+      "id": "bibi-lesson-3",
+      "title": "Daily Activities",
+      "steps": [
+        {
+          "lessonType": "info",
+          "emotion": "happy",
+          "characterMessage": {
+            "romanPunjabi": "Aao rozana de kaam: \"khana\", \"pina\", \"sona\", \"kam karna\".",
+            "gurmukhi": "ਆਓ ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ: \"ਖਾਣਾ\", \"ਪੀਣਾ\", \"ਸੋਣਾ\", \"ਕੰਮ ਕਰਨਾ\"।",
+            "romanEnglish": "Let's learn daily verbs: eat, drink, sleep, work."
+          },
+          "question": "List any one daily activity mentioned:",
+          "options": [],
+          "correctAnswers": ["khana", "pina", "sona", "kam karna"]
+        }
+      ]
+    }
+  ]
+}

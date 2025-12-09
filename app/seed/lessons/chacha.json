@@ -1,0 +1,125 @@
+{
+  "characterId": "chacha",
+  "characterName": "Chacha Ji",
+  "lessons": [
+    {
+      "id": "chacha-lesson-1",
+      "title": "Village Vocabulary",
+      "steps": [
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Oye puttar, pind di hawa vakhri hi hunda! Swagat aa.",
+            "gurmukhi": "ਓਏ ਪੁੱਤਰ, ਪਿੰਡ ਦੀ ਹਵਾ ਵੱਖਰੀ ਹੀ ਹੁੰਦੀ! ਸਵਾਗਤ ਆ।",
+            "romanEnglish": "Welcome to village vibes."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "characterMessage": {
+            "romanPunjabi": "\"Pind\" da matlab?",
+            "gurmukhi": "\"ਪਿੰਡ\" ਦਾ ਮਤਲਬ?",
+            "romanEnglish": "Meaning of \"pind\"?"
+          },
+          "question": "Meaning of \"pind\":",
+          "options": ["Village", "City", "Farm", "House"],
+          "correctAnswers": ["Village"]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Arre city nu \"shehar\" kehnde. \"Pind\" = village.",
+            "gurmukhi": "ਅਰੇ ਸਿਟੀ ਨੂੰ \"ਸ਼ਹਿਰ\" ਕਹਿੰਦੇ। \"ਪਿੰਡ\" = ਵਿਲੇਜ।",
+            "romanEnglish": "City is 'shehar', village is 'pind'."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Sahi! Chalo \"khet\" vi yaad rakho.",
+            "gurmukhi": "ਸਹੀ! ਚਲੋ \"ਖੇਤ\" ਵੀ ਯਾਦ ਰੱਖੋ।",
+            "romanEnglish": "Right! Now remember 'khet' (farm)."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Farm da Punjabi shabd?",
+            "gurmukhi": "ਫਾਰਮ ਦਾ ਪੰਜਾਬੀ ਸ਼ਬਦ?",
+            "romanEnglish": "Punjabi for 'farm'?"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "characterMessage": {
+            "romanPunjabi": "Chuno ji.",
+            "gurmukhi": "ਚੁਣੋ ਜੀ।",
+            "romanEnglish": "Choose."
+          },
+          "question": "Punjabi word for farm:",
+          "options": ["Khet", "Ghar", "Sadak", "Bazaar"],
+          "correctAnswers": ["Khet"]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Oye oye! \"Khet\" chuno. Fer koshish karo!",
+            "gurmukhi": "ਓਏ ਓਏ! \"ਖੇਤ\" ਚੁਣੋ। ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ!",
+            "romanEnglish": "Pick 'khet'. Try again!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "characterMessage": {
+            "romanPunjabi": "Hun banao vaak: \"Sadde khet vich gehun aa.\"",
+            "gurmukhi": "ਹੁਣ ਬਣਾਓ ਵਾਕ: \"ਸਾਡੇ ਖੇਤ ਵਿਚ ਗੇਹੂੰ ਆ।\"",
+            "romanEnglish": "Make a sentence: 'Our farm has wheat.'"
+          },
+          "question": "Type in Roman Punjabi:",
+          "options": [],
+          "correctAnswers": [
+            "sadde khet vich gehun aa",
+            "sadde khet vich gehun hai"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "\"Sadde\" (our), \"vich\" (in). Dubara likho.",
+            "gurmukhi": "\"ਸਾਡੇ\" (ਆਰ), \"ਵਿੱਚ\" (ਇਨ)। ਦੁਬਾਰਾ ਲਿਖੋ।",
+            "romanEnglish": "Use 'sadde … vich'. Try again."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Balle! Tussi pind de shabd sikhe! 🚜",
+            "gurmukhi": "ਬੱਲੇ! ਤੁਸੀਂ ਪਿੰਡ ਦੇ ਸ਼ਬਦ ਸਿੱਖੇ! 🚜",
+            "romanEnglish": "Great! You learned village words!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        }
+      ]
+    }
+  ]
+}

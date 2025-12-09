@@ -1,0 +1,121 @@
+{
+  "characterId": "restaurant",
+  "characterName": "Restaurant Waiter",
+  "lessons": [
+    {
+      "id": "restaurant-lesson-1",
+      "title": "Ordering Food",
+      "steps": [
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Sat Sri Akal ji! Tuhanu ki serve kariye?",
+            "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਜੀ! ਤੁਹਾਨੂੰ ਕੀ ਸਰਵ ਕਰੀਏ?",
+            "romanEnglish": "Hello! What can I serve you?"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "characterMessage": {
+            "romanPunjabi": "Type an order: 1 butter chicken, 2 naan, 1 lassi.",
+            "gurmukhi": "ਟਾਈਪ ਕਰੋ: ਇੱਕ ਬਟਰ ਚਿਕਨ, ਦੋ ਨਾਨ, ਇੱਕ ਲੱਸੀ।",
+            "romanEnglish": "Type the order."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": [
+            "kirpa karke ik butter chicken do naan te ik lassi de deo ji",
+            "kirpa karke ik butter chicken, do naan te ik lassi de deo ji"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Order vich \"kirpa karke … ji\" polite lagda. Dubara yaad rakho.",
+            "gurmukhi": "ਆਰਡਰ ਵਿੱਚ \"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਨਮਰ ਲੱਗਦਾ।",
+            "romanEnglish": "Use 'kirpa karke … ji' for politeness."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Bahut sohni boli! Spice level kinna?",
+            "gurmukhi": "ਬਹੁਤ ਸੋਹਣੀ ਬੋਲੀ! ਮਿਰਚ ਕਿੰਨੀ?",
+            "romanEnglish": "Nice! How spicy?"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "characterMessage": {
+            "romanPunjabi": "Choose your spice level:",
+            "gurmukhi": "ਮਿਰਚ ਦੀ ਲੇਵਲ ਚੁਣੋ:",
+            "romanEnglish": "Choose spice level."
+          },
+          "question": "Mirch kinna?",
+          "options": ["Bilkul halka (mild)", "Medi (medium)", "Teekha (spicy)"],
+          "correctAnswers": [
+            "Bilkul halka (mild)",
+            "Medi (medium)",
+            "Teekha (spicy)"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Theek aa ji! Hun bill mangna sikho.",
+            "gurmukhi": "ਠੀਕ ਆ ਜੀ! ਹੁਣ ਬਿੱਲ ਮੰਗਣਾ ਸਿੱਖੋ।",
+            "romanEnglish": "Great! Now ask for the bill."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "characterMessage": {
+            "romanPunjabi": "Type: \"Kirpa karke bill bana deo, ji.\"",
+            "gurmukhi": "ਲਿਖੋ: \"ਕਿਰਪਾ ਕਰਕੇ ਬਿੱਲ ਬਣਾ ਦੇਓ, ਜੀ।\"",
+            "romanEnglish": "Type politely."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": [
+            "kirpa karke bill bana deo ji",
+            "kirpa karke bill bana deo, ji"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "\"Kirpa karke … ji\" nal full politeness aundi.",
+            "gurmukhi": "\"ਕਿਰਪਾ ਕਰਕੇ … ਜੀ\" ਨਾਲ ਪੂਰੀ ਨਮਰਤਾ ਆਉਂਦੀ।",
+            "romanEnglish": "Use the full polite phrase."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Shabash! Tussi restaurant order sikhe! 🍽️",
+            "gurmukhi": "ਸ਼ਾਬਾਸ਼! ਤੁਸੀਂ ਰੈਸਟੋਰੈਂਟ ਆਰਡਰ ਸਿੱਖੇ! 🍽️",
+            "romanEnglish": "Good! You learned restaurant ordering!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        }
+      ]
+    }
+  ]
+}

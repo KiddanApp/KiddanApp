@@ -14,8 +14,8 @@ def get_lesson_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> Less
 def get_progress_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> ProgressService:
     return ProgressService(db)
 
-def get_simplified_lesson_service() -> SimplifiedLessonService:
-    return SimplifiedLessonService()
+def get_simplified_lesson_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> SimplifiedLessonService:
+    return SimplifiedLessonService(db)
 
 class StartLessonRequest(BaseModel):
     user_id: str
@@ -62,7 +62,7 @@ async def get_next(
             raise HTTPException(status_code=404, detail="Lessons not started. Call /lessons/start first.")
 
         # Get next interaction
-        interaction = lesson_service.get_next_interaction(progress.current_lesson_index, progress.current_step_index, character_id)
+        interaction = await lesson_service.get_next_interaction(progress.current_lesson_index, progress.current_step_index, character_id)
 
         if interaction["type"] == "completed":
             # All lessons completed
@@ -109,7 +109,7 @@ async def submit_answer(
             raise HTTPException(status_code=404, detail="Lessons not started")
 
         # Validate answer
-        result = lesson_service.validate_answer(
+        result = await lesson_service.validate_answer(
             progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer
         )
 
@@ -117,7 +117,7 @@ async def submit_answer(
             # Advance to next step
             new_step_index = progress.current_step_index + 1
             # Check if this completes the lesson
-            lesson = lesson_service.get_lesson_by_index(progress.current_lesson_index, request.character_id)
+            lesson = await lesson_service.get_lesson_by_index(progress.current_lesson_index, request.character_id)
             if lesson and new_step_index >= len(lesson["steps"]):
                 # Lesson completed, advance to next lesson
                 new_lesson_index = progress.current_lesson_index + 1
@@ -150,7 +150,7 @@ async def get_character_lessons(character_key: str, service: SimplifiedLessonSer
         JSON object containing all lessons for the character
     """
     try:
-        lesson_data = service.get_character_data(character_key)
+        lesson_data = await service.get_character_data(character_key)
 
         if not lesson_data:
             raise HTTPException(

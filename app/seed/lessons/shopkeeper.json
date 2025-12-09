@@ -1,0 +1,96 @@
+{
+  "characterId": "shopkeeper",
+  "characterName": "Dukandaar Ji",
+  "lessons": [
+    {
+      "id": "shopkeeper-lesson-1",
+      "title": "Buying Essentials",
+      "steps": [
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Satsriakal ji! Ki chahida?",
+            "gurmukhi": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਜੀ! ਕੀ ਚਾਹੀਦਾ?",
+            "romanEnglish": "Hello! What do you need?"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "characterMessage": {
+            "romanPunjabi": "Type: \"Do kilo atta te ik packet namak.\"",
+            "gurmukhi": "ਲਿਖੋ: \"ਦੋ ਕਿਲੋ ਆਟਾ ਤੇ ਇੱਕ ਪੈਕੇਟ ਨਮਕ।\"",
+            "romanEnglish": "Type the order."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": [
+            "do kilo atta te ik packet namak",
+            "2 kilo atta te 1 packet namak"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "\"Te\" naal jodna na bhulo.",
+            "gurmukhi": "\"ਤੇ\" ਨਾਲ ਜੋੜੋ।",
+            "romanEnglish": "Join items with 'te'."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Ho gaya ji! Bag ch paa dena?",
+            "gurmukhi": "ਹੋ ਗਿਆ ਜੀ! ਬੈਗ ਚ ਪਾ ਦੇਣਾ?",
+            "romanEnglish": "Done! Shall I bag it?"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "characterMessage": {
+            "romanPunjabi": "Bill Punjabi vich kivein mangoge?",
+            "gurmukhi": "ਬਿੱਲ ਪੰਜਾਬੀ ਵਿੱਚ ਕਿਵੇਂ ਮੰਗੋਗੇ?",
+            "romanEnglish": "How to ask for bill?"
+          },
+          "question": "Pick one:",
+          "options": [
+            "Bill de de",
+            "Kirpa karke bill bana deo, ji",
+            "Money bolo"
+          ],
+          "correctAnswers": ["Kirpa karke bill bana deo, ji"]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Polite bano: \"kirpa karke… ji\".",
+            "gurmukhi": "ਨਮਰ ਬਣੋ: \"ਕਿਰਪਾ ਕਰਕੇ… ਜੀ\"।",
+            "romanEnglish": "Use polite form."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Vadhia! Tussi shopping sikhi! 🛍️",
+            "gurmukhi": "ਵਧੀਆ! ਤੁਸੀਂ ਸ਼ਾਪਿੰਗ ਸਿੱਖੀ! 🛍️",
+            "romanEnglish": "Great! You learned shopping!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        }
+      ]
+    }
+  ]
+}

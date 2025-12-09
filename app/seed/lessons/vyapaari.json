@@ -1,0 +1,97 @@
+{
+  "characterId": "vyapaari",
+  "characterName": "Vyapaari Ji",
+  "lessons": [
+    {
+      "id": "vyapaari-lesson-1",
+      "title": "Numbers & Negotiation",
+      "steps": [
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Soda vyapar kariye. Keemat gallbat!",
+            "gurmukhi": "ਸੋਦਾ ਵਿਆਪਾਰ ਕਰੀਏ। ਕੀਮਤ ਗੱਲਬਾਤ!",
+            "romanEnglish": "Let's bargain."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "text",
+          "characterMessage": {
+            "romanPunjabi": "Translate: \"How much for this?\"",
+            "gurmukhi": "ਅਨੁਵਾਦ: \"ਇਹਦਾ ਕਿੰਨਾ ਰੇਟ?\"",
+            "romanEnglish": "Translate."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": [
+            "ehda kinne paise?",
+            "ehda kinna rate?",
+            "ehda kinni kimat?"
+          ]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "\"Ehda kinna/kinne\" best lagda.",
+            "gurmukhi": "\"ਇਹਦਾ ਕਿੰਨਾ/ਕਿੰਨੇ\" ਚੰਗਾ ਲੱਗਦਾ।",
+            "romanEnglish": "Use 'ehda kinna/kinne'."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Theek! Hun kaho: \"Thoda ghatao ji.\"",
+            "gurmukhi": "ਠੀਕ! ਹੁਣ ਕਹੋ: \"ਥੋੜਾ ਘਟਾਓ ਜੀ।\"",
+            "romanEnglish": "Now say: 'Thoda ghatao ji.'"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "mcq",
+          "characterMessage": {
+            "romanPunjabi": "Select the polite negotiating line:",
+            "gurmukhi": "ਨਮਰ ਨੇਗੋਸ਼ੀਏਸ਼ਨ ਲਾਈਨ ਚੁਣੋ:",
+            "romanEnglish": "Pick one."
+          },
+          "question": "Best line?",
+          "options": [
+            "Bahut mehnga aa!",
+            "Thoda discount ho sakda ji?",
+            "Nahi chahida."
+          ],
+          "correctAnswers": ["Thoda discount ho sakda ji?"]
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "\"Ji\" naal sab kuch meetha lagda.",
+            "gurmukhi": "\"ਜੀ\" ਨਾਲ ਸਭ ਕੁਝ ਮੀਠਾ ਲੱਗਦਾ।",
+            "romanEnglish": "Add 'ji' for politeness."
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        },
+        {
+          "lessonType": "info",
+          "characterMessage": {
+            "romanPunjabi": "Shabash! Tussi vyapar sikhe! 💼",
+            "gurmukhi": "ਸ਼ਾਬਾਸ਼! ਤੁਸੀਂ ਵਿਆਪਾਰ ਸਿੱਖੇ! 💼",
+            "romanEnglish": "Well done! You learned business!"
+          },
+          "question": "",
+          "options": [],
+          "correctAnswers": []
+        }
+      ]
+    }
+  ]
+}
