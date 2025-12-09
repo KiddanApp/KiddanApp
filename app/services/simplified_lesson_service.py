@@ -17,8 +17,9 @@ class SimplifiedLessonService:
         lesson_data = await self.lesson_service.get_character_lessons(character_id)
         if lesson_data:
             self.lessons_by_character[character_id] = lesson_data.model_dump()
+            return self.lessons_by_character[character_id]
 
-        return self.lessons_by_character[character_id]
+        return None
 
     async def get_lesson_by_index(self, lesson_index: int, character_id: str) -> Optional[Dict[str, Any]]:
         """Get lesson by index for a character"""

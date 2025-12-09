@@ -95,22 +95,79 @@ class CharacterService:
 
         return int((completed_steps / total_steps) * 100)
 
+    async def _calculate_question_counts(self, user_id: str, character_id: str) -> tuple[int, int]:
+        """Calculate total and completed questions for a user and character
+        Returns: (total_questions, completed_questions)
+        """
+        # Get character lesson data
+        character_data = await self.lesson_service.get_character_data(character_id)
+        if not character_data:
+            return 0, 0
+
+        lessons = character_data.get("lessons", [])
+        if not lessons:
+            return 0, 0
+
+        # Count total questions (non-info steps)
+        total_questions = 0
+        for lesson in lessons:
+            steps = lesson.get("steps", [])
+            for step in steps:
+                if step.get("lessonType") != "info":
+                    total_questions += 1
+
+        if total_questions == 0:
+            return 0, 0
+
+        # Get user's progress
+        user_progress = await self.progress_service.get_progress(user_id, character_id)
+        if not user_progress or user_progress.completed:
+            completed_questions = total_questions if user_progress and user_progress.completed else 0
+            return total_questions, completed_questions
+
+        # Count completed questions
+        completed_questions = 0
+        current_lesson_idx = user_progress.current_lesson_index
+        current_step_idx = user_progress.current_step_index
+
+        for lesson_idx, lesson in enumerate(lessons):
+            if lesson_idx > current_lesson_idx:
+                break
+
+            steps = lesson.get("steps", [])
+            for step_idx, step in enumerate(steps):
+                if step.get("lessonType") == "info":
+                    continue  # Skip info steps
+
+                if lesson_idx < current_lesson_idx or (lesson_idx == current_lesson_idx and step_idx < current_step_idx):
+                    completed_questions += 1
+                else:
+                    break
+
+        return total_questions, completed_questions
+
     async def get_all_characters_with_progress(self, user_id: str = None) -> List[CharacterOut]:
-        """Get all characters with progress percentage for the user"""
+        """Get all characters with progress data for the user"""
         characters = await self.get_all_characters()
         result = []
 
         for character in characters:
             progress = 0
+            total_questions = 0
+            completed_questions = 0
+
             if user_id:
                 progress = await self._calculate_progress_percentage(user_id, character.id)
+                total_questions, completed_questions = await self._calculate_question_counts(user_id, character.id)
 
             result.append(CharacterOut(
                 id=character.id,
                 name=character.name,
                 role=character.role,
                 personality=character.personality,
-                progress=progress
+                progress=progress,
+                total_questions=total_questions,
+                completed_questions=completed_questions
             ))
 
         return result
