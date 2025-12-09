@@ -10,8 +10,11 @@ def get_character_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> C
     return CharacterService(db)
 
 @router.get("/", response_model=list[CharacterOut])
-async def list_characters(service: CharacterService = Depends(get_character_service)):
-    characters = await service.get_all_characters()
+async def list_characters(
+    user_id: str = None,
+    service: CharacterService = Depends(get_character_service)
+):
+    characters = await service.get_all_characters_with_progress(user_id)
     return characters
 
 @router.get("/{char_id}", response_model=CharacterOut)

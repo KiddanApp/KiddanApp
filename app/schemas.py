@@ -6,6 +6,7 @@ class CharacterOut(BaseModel):
     name: str
     role: str
     personality: Optional[str]
+    progress: int = 0  # Progress percentage 0-100 for the user
 
 class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None  # If None, starts new conversation
