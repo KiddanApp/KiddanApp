@@ -17,21 +17,26 @@ async def load_character(char_id: str) -> Optional[Dict]:
         chars = json.load(f)
     return chars.get(char_id)
 
-def call_gemini(prompt: str, max_tokens: int = 80) -> str:
+async def call_gemini(prompt: str, max_tokens: int = 80) -> str:
     genai.configure(api_key=settings.GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-2.0-flash")
 
-    response = model.generate_content(
-        prompt,
-        generation_config=genai.types.GenerationConfig(
-            max_output_tokens=max_tokens,
+    # Run blocking call in thread executor
+    loop = asyncio.get_event_loop()
+    response = await loop.run_in_executor(
+        None,
+        lambda: model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=max_tokens,
+            )
         )
     )
+
     try:
         return response.text
-    except Exception as e:
-        # Fallback mock response for demo
-        return f"Demo response: Hello! I'm here to help you learn Punjabi."
+    except Exception:
+        return "Demo response: Hello! I'm here to help you learn Punjabi."
 
 async def get_conversation_history(db: AsyncIOMotorDatabase, conversation_id: str, limit: int = 10) -> List[Message]:
     """Get recent conversation history for context"""
@@ -79,7 +84,9 @@ Keep responses conversational and engaging. Remember previous messages in this c
     full_prompt = f"{system_prompt}{context}Current User Message: {user_message}\n\nYour Response:"
 
     # Generate English response with context
-    english = call_gemini(full_prompt, max_tokens=100)
+    english = await call_gemini(full_prompt, max_tokens=100)
+
+    print(full_prompt)
 
     # Translate to Roman and Gurmukhi
     roman, gurmukhi = await asyncio.gather(
