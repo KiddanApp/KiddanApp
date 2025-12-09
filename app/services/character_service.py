@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import List, Optional
-from app.models import Character
+from typing import List, Optional, Tuple
+from app.models import Character, UserLessonProgress
 from app.schemas import CharacterOut
 from app.services.progress_service import ProgressService
 from app.services.simplified_lesson_service import SimplifiedLessonService
@@ -146,19 +146,130 @@ class CharacterService:
 
         return total_questions, completed_questions
 
+    async def _get_all_user_progress(self, user_id: str, character_ids: List[str]) -> List[UserLessonProgress]:
+        """Get all progress records for a user and specific characters in one query"""
+        return await self.progress_service.get_all_user_progress(user_id, character_ids)
+
+    async def _get_lesson_totals(self, character_id: str) -> int:
+        """Get total number of questions for a character"""
+        character_data = await self.lesson_service.get_character_data(character_id)
+        if not character_data:
+            return 0
+
+        lessons = character_data.get("lessons", [])
+        if not lessons:
+            return 0
+
+        total_questions = 0
+        for lesson in lessons:
+            steps = lesson.get("steps", [])
+            for step in steps:
+                if step.get("lessonType") != "info":
+                    total_questions += 1
+
+        return total_questions
+
+    async def _calculate_progress_percentage_from_data(self, user_progress: UserLessonProgress, total_steps: int) -> int:
+        """Calculate progress percentage using pre-fetched data"""
+        if user_progress.completed:
+            return 100
+
+        if total_steps == 0:
+            return 0
+
+        # For simplicity, we'll need to get the character data to count steps
+        # This could be further optimized by pre-calculating step counts
+        character_data = await self.lesson_service.get_character_data(user_progress.character_id)
+        if not character_data:
+            return 0
+
+        lessons = character_data.get("lessons", [])
+        if not lessons:
+            return 0
+
+        total_steps_actual = sum(len(lesson.get("steps", [])) for lesson in lessons)
+        if total_steps_actual == 0:
+            return 0
+
+        # Calculate completed steps
+        completed_lessons = user_progress.current_lesson_index
+        completed_steps_in_current = user_progress.current_step_index
+
+        completed_steps = 0
+        for i in range(completed_lessons):
+            if i < len(lessons):
+                completed_steps += len(lessons[i].get("steps", []))
+
+        completed_steps += completed_steps_in_current
+
+        return int((completed_steps / total_steps_actual) * 100)
+
+    async def _calculate_completed_questions_from_data(self, user_progress: UserLessonProgress, character_id: str) -> int:
+        """Calculate completed questions using pre-fetched user progress"""
+        if user_progress.completed:
+            # Return total questions if completed
+            return await self._get_lesson_totals(character_id)
+
+        # Get character lesson data to count completed questions
+        character_data = await self.lesson_service.get_character_data(character_id)
+        if not character_data:
+            return 0
+
+        lessons = character_data.get("lessons", [])
+        if not lessons:
+            return 0
+
+        completed_questions = 0
+        current_lesson_idx = user_progress.current_lesson_index
+        current_step_idx = user_progress.current_step_index
+
+        for lesson_idx, lesson in enumerate(lessons):
+            if lesson_idx > current_lesson_idx:
+                break
+
+            steps = lesson.get("steps", [])
+            for step_idx, step in enumerate(steps):
+                if step.get("lessonType") == "info":
+                    continue  # Skip info steps
+
+                if lesson_idx < current_lesson_idx or (lesson_idx == current_lesson_idx and step_idx < current_step_idx):
+                    completed_questions += 1
+                else:
+                    break
+
+        return completed_questions
+
     async def get_all_characters_with_progress(self, user_id: str = None) -> List[CharacterOut]:
         """Get all characters with progress data for the user"""
         characters = await self.get_all_characters()
         result = []
 
+        # Batch load all user progress for characters to avoid N individual queries
+        user_progress_cache = {}
+        lesson_totals_cache = {}  # Cache total questions per character
+
+        if user_id:
+            # Get all user progress in one query
+            all_progress = await self._get_all_user_progress(user_id, [char.id for char in characters])
+            user_progress_cache = {p.character_id: p for p in all_progress}
+
+            # Pre-load lesson data for all characters to avoid N individual queries
+            for character in characters:
+                if character.id not in lesson_totals_cache:
+                    lesson_totals_cache[character.id] = await self._get_lesson_totals(character.id)
+
         for character in characters:
             progress = 0
-            total_questions = 0
+            total_questions = lesson_totals_cache.get(character.id, 0)
             completed_questions = 0
 
             if user_id:
-                progress = await self._calculate_progress_percentage(user_id, character.id)
-                total_questions, completed_questions = await self._calculate_question_counts(user_id, character.id)
+                user_progress = user_progress_cache.get(character.id)
+                if user_progress:
+                    # Calculate progress percentage
+                    progress = await self._calculate_progress_percentage_from_data(user_progress, total_questions)
+                    # Calculate completed questions from progress data and lesson totals
+                    completed_questions = await self._calculate_completed_questions_from_data(user_progress, character.id)
 
             result.append(CharacterOut(
                 id=character.id,

@@ -16,6 +16,14 @@ async def signup(
     response: Response,
     service: UserService = Depends(get_user_service)
 ):
+    # Check if email is already registered
+    existing_user = await service.get_user_by_email(user_data.email)
+    if existing_user:
+        raise HTTPException(
+            status_code=409,
+            detail="An account with this email already exists"
+        )
+
     try:
         user = await service.create_user(user_data.email, user_data.password)
         # Set session

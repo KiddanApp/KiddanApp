@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import Optional
+from typing import Optional, List
 from app.models import UserLessonProgress
 
 class ProgressService:
@@ -38,3 +38,14 @@ class ProgressService:
             },
             {"$set": {"current_lesson_index": lesson_index, "current_step_index": step_index, "completed": completed}}
         )
+
+    async def get_all_user_progress(self, user_id: str, character_ids: List[str] = None) -> List[UserLessonProgress]:
+        """Get progress records for all characters a user has interacted with, optionally filtered by character_ids"""
+        query = {"user_id": user_id}
+        if character_ids:
+            query["character_id"] = {"$in": character_ids}
+
+        progress_list = []
+        async for doc in self.collection.find(query):
+            progress_list.append(UserLessonProgress(**doc))
+        return progress_list
