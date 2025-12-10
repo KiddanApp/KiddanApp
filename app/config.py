@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     GEMINI_API_KEY: str = ""
+    ADMIN_API_KEY: str = "temp"  # Default admin key for admin panel access
     MAX_HISTORY: int = 3
     MONGODB_URL: str = "mongodb://mongo:rBYiRMyicZSzBbfqGZpAfGEfXDaKlbLC@caboose.proxy.rlwy.net:34905"
     DATABASE_URL: str = "postgresql://postgres:xkizWcjXoTdHOvCaWxMtwSCPmPGtcMqU@mainline.proxy.rlwy.net:19589/railway"

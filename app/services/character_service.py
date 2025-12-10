@@ -239,6 +239,51 @@ class CharacterService:
 
         return completed_questions
 
+    async def _determine_character_emotion(self, user_id: str, character_id: str) -> str:
+        """Determine the current emotion of a character based on their last chat message"""
+        if not user_id:
+            return "happy"
+
+        try:
+            # Get the most recent message for this user and character
+            pipeline = [
+                {
+                    "$match": {
+                        "user_id": user_id,
+                        "character_id": character_id
+                    }
+                },
+                {
+                    "$sort": {"timestamp": -1}
+                },
+                {
+                    "$limit": 1
+                }
+            ]
+
+            cursor = self.collection.database.messages.aggregate(pipeline)
+            messages = []
+            async for doc in cursor:
+                messages.append(doc)
+
+            if not messages:
+                return "happy"
+
+            last_message = messages[0]
+            ai_message = last_message.get("ai_message_english", "").lower()
+
+            # Determine expression based on content (same logic as ai_service)
+            if any(word in ai_message for word in ["happy", "great", "wonderful", "love", "excited"]):
+                return "happy"
+            elif any(word in ai_message for word in ["angry", "upset", "sorry", "wrong", "bad"]):
+                return "angry"
+            else:
+                return "neutral"
+
+        except Exception:
+            # Default to happy if there's any error
+            return "happy"
+
     async def get_all_characters_with_progress(self, user_id: str = None) -> List[CharacterOut]:
         """Get all characters with progress data for the user"""
         characters = await self.get_all_characters()
@@ -258,10 +303,17 @@ class CharacterService:
                 if character.id not in lesson_totals_cache:
                     lesson_totals_cache[character.id] = await self._get_lesson_totals(character.id)
 
+        # Pre-calculate emotions for all characters
+        emotion_cache = {}
+        if user_id:
+            for character in characters:
+                emotion_cache[character.id] = await self._determine_character_emotion(user_id, character.id)
+
         for character in characters:
             progress = 0
             total_questions = lesson_totals_cache.get(character.id, 0)
             completed_questions = 0
+            emotion = emotion_cache.get(character.id, "happy") if user_id else "happy"
 
             if user_id:
                 user_progress = user_progress_cache.get(character.id)
@@ -278,7 +330,8 @@ class CharacterService:
                 personality=character.personality,
                 progress=progress,
                 total_questions=total_questions,
-                completed_questions=completed_questions
+                completed_questions=completed_questions,
+                emotion=emotion
             ))
 
         return result

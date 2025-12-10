@@ -1,13 +1,31 @@
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, Dict, List, Any
 import re
+import asyncio
 
 class SimplifiedLessonService:
+    def normalize_text(self, text: str) -> str:
+        """Comprehensive text normalization for better matching in language learning."""
+        if not text:
+            return ""
+
+        # Remove punctuation (keep alphanumeric, whitespace, and Punjabi script)
+        clean = re.sub(r'[^\w\s\u0A80-\u0AFF]', '', text)
+
+        # Normalize multiple whitespaces to single space
+        clean = ' '.join(clean.split())
+
+        # Case normalization
+        clean = clean.lower()
+
+        return clean.strip()
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         from app.services.lesson_service import LessonService
         self.lesson_service = LessonService(db)
         self.lessons_by_character = {}  # Cache for loaded lessons
+        from app.services.ai_service import call_gemini
+        self.call_gemini = call_gemini
 
     async def _get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get character lesson data from MongoDB or cache"""
@@ -88,14 +106,16 @@ class SimplifiedLessonService:
             # Match text in quotes
             match = re.search(r'"([^"]+)"', character_message)
             if match:
-                expected = match.group(1).strip('""').lower().strip()
-                if expected and user_answer.strip().lower() == expected:
+                expected = match.group(1)  # Keep the original text for feedback
+                if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
                     return {"valid": True, "advance": True, "feedback": "Correct!"}
                 else:
+                    # Generate AI feedback for text input answers
+                    ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
                     return {
                         "valid": False,
                         "advance": False,
-                        "feedback": f"Incorrect. Expected: {character_message}",
+                        "feedback": ai_feedback,
                         "retry": True
                     }
             else:
@@ -114,21 +134,67 @@ class SimplifiedLessonService:
             # No correct answers defined
             return {"valid": True, "advance": True, "feedback": "Accepted"}
 
-        # Normalize user_answer
-        normalized_answer = user_answer.strip().lower()
+        # Normalize user_answer using comprehensive normalization
+        normalized_answer = self.normalize_text(user_answer)
 
-        # Check if any correct answer matches
+        # Check if any correct answer matches (also normalize correct answers)
         for correct in correct_answers:
-            if isinstance(correct, str) and correct.strip().lower() == normalized_answer:
+            if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
                 return {"valid": True, "advance": True, "feedback": "Correct!"}
+
+        # Generate contextual AI feedback for wrong answers
+        ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
 
         return {
             "valid": False,
             "advance": False,
-            "feedback": step.get("characterMessage", {}).get("romanEnglish", "Incorrect"),
+            "feedback": ai_feedback,
             "retry": True
         }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the full character lesson data"""
         return await self._get_character_data(character_id)
+
+    async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], lesson_type: str) -> str:
+        """Generate contextual AI feedback for wrong answers in Roman Punjabi only."""
+        if not user_answer.strip():
+            return "Jawab deo ji."
+
+        # Extract lesson context
+        character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
+        question = step.get("question", "")
+        correct_answers = step.get("correctAnswers", [])
+
+        prompt = f"""
+You are a Punjabi language tutor. Evaluate student answers contextually and provide feedback ONLY in Roman Punjabi.
+
+Lesson Context:
+Character: {character_message}
+Question: {question}
+User Answer: {user_answer}
+Acceptable Answers: {", ".join(correct_answers)}
+
+Evaluation Steps:
+1. First, determine if the user's answer makes contextual sense for the question asked
+2. If contextually wrong: Point out why it's not suitable for this question
+3. If contextually okay: Check Roman Punjabi spelling, grammar, and syntax errors
+4. Point out ONLY the mistakes - do not mention correct parts
+5. Provide specific corrections in Roman Punjabi
+
+Response Rules:
+- Respond STRICTLY in Roman Punjabi only (no English, no Gurmukhi)
+- Be encouraging but direct
+- For spelling: "Tusi 'galat' likhe ho, 'sahi' likho"
+- For syntax: "Tusi wrong order use kiya, karo: ..."
+- For contextual: "Eh jawab is sawaal nu suit nahi karta"
+
+Generate Roman Punjabi feedback:
+"""
+
+        try:
+            feedback = await self.call_gemini(prompt, max_tokens=80)
+            return feedback.strip()
+        except Exception as e:
+            # Fallback in Roman Punjabi
+            return "Galat hai. Dubara try karo."

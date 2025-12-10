@@ -2,6 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends, Header, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
+from bson import ObjectId
+import json
+from datetime import datetime
 from app.db import get_database
 from app.services.character_service import CharacterService
 from app.services.lesson_service import LessonService
@@ -12,10 +15,11 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 # Basic authentication dependency
 def verify_admin_key(x_admin_key: Optional[str] = Header(None)):
-    if not x_admin_key or x_admin_key != "temp":  # Using API key as admin key for simplicity
+    expected_key = settings.ADMIN_API_KEY or "temp"  # Allow setting via config
+    if not x_admin_key or x_admin_key != expected_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or missing admin key"
+            detail=f"Invalid or missing admin key. Expected: {expected_key}"
         )
     return x_admin_key
 
@@ -291,3 +295,167 @@ async def reorder_lesson_steps(
     if not success:
         raise HTTPException(status_code=400, detail="Failed to reorder steps")
     return {"message": "Steps reordered successfully"}
+
+# Advanced MongoDB Browser/Editor Endpoints
+@router.get("/database/collections")
+async def get_database_collections(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Get list of all collections in the database"""
+    try:
+        collections = await db.list_collection_names()
+        collections_info = []
+
+        for collection_name in collections:
+            collection = db[collection_name]
+            count = await collection.count_documents({})
+            collections_info.append({
+                "name": collection_name,
+                "document_count": count
+            })
+
+        return {"collections": collections_info}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting collections: {str(e)}")
+
+@router.get("/database/{collection_name}/documents/{document_id}")
+async def get_single_document(
+    collection_name: str,
+    document_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Get a single document by ID"""
+    try:
+        collection = db[collection_name]
+        object_id = ObjectId(document_id)
+        document = await collection.find_one({"_id": object_id})
+
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+
+        document["_id"] = str(document["_id"])
+        return document
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting document: {str(e)}")
+
+@router.get("/database/{collection_name}/documents")
+async def get_collection_documents(
+    collection_name: str,
+    skip: int = 0,
+    limit: int = 50,
+    search: Optional[str] = None,
+    filter_field: Optional[str] = None,
+    filter_value: Optional[str] = None,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Get documents from a collection with optional filtering"""
+    try:
+        collection = db[collection_name]
+
+        # Build query
+        query = {}
+        if search:
+            # Simple text search across all fields
+            query = {"$text": {"$search": search}}
+        elif filter_field and filter_value:
+            # Simple equality filter
+            query[filter_field] = filter_value
+
+        # Get documents
+        cursor = collection.find(query).skip(skip).limit(limit)
+        documents = []
+        async for doc in cursor:
+            # Add string representation of ObjectId for display
+            doc["_id"] = str(doc["_id"])
+            documents.append(doc)
+
+        total_count = await collection.count_documents(query)
+
+        return {
+            "collection": collection_name,
+            "documents": documents,
+            "total_count": total_count,
+            "skip": skip,
+            "limit": limit,
+            "has_more": (skip + limit) < total_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting documents: {str(e)}")
+
+@router.post("/database/{collection_name}/documents")
+async def create_document(
+    collection_name: str,
+    document: Dict[str, Any],
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Create a new document in a collection"""
+    try:
+        collection = db[collection_name]
+        result = await collection.insert_one(document)
+        document["_id"] = str(result.inserted_id)
+        return {
+            "message": "Document created successfully",
+            "document": document,
+            "inserted_id": str(result.inserted_id)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating document: {str(e)}")
+
+@router.put("/database/{collection_name}/documents/{document_id}")
+async def update_document(
+    collection_name: str,
+    document_id: str,
+    document: Dict[str, Any],
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Update a document in a collection"""
+    try:
+        collection = db[collection_name]
+        object_id = ObjectId(document_id)
+
+        # Remove _id from document if present to avoid updating it
+        doc_to_update = {k: v for k, v in document.items() if k != "_id"}
+
+        result = await collection.update_one(
+            {"_id": object_id},
+            {"$set": doc_to_update}
+        )
+
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Document not found")
+
+        return {
+            "message": "Document updated successfully",
+            "modified_count": result.modified_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating document: {str(e)}")
+
+@router.delete("/database/{collection_name}/documents/{document_id}")
+async def delete_document(
+    collection_name: str,
+    document_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    admin_key: str = Depends(verify_admin_key)
+):
+    """Delete a document from a collection"""
+    try:
+        collection = db[collection_name]
+        object_id = ObjectId(document_id)
+
+        result = await collection.delete_one({"_id": object_id})
+
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Document not found")
+
+        return {
+            "message": "Document deleted successfully",
+            "deleted_count": result.deleted_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting document: {str(e)}")

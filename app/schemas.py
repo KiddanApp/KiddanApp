@@ -9,6 +9,7 @@ class CharacterOut(BaseModel):
     progress: int = 0  # Progress percentage 0-100 for the user
     total_questions: int = 0  # Total questions in all lessons for this character
     completed_questions: int = 0  # Questions completed by the user for this character
+    emotion: str = "happy"  # Current emotion based on last chat interaction
 
 class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None  # If None, starts new conversation

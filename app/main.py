@@ -110,6 +110,14 @@ async def admin_panel():
         return FileResponse(admin_file, media_type='text/html')
     return {"error": "Admin panel not found"}
 
+@app.get("/mongo-admin")
+async def mongo_admin_panel():
+    """Serve the advanced MongoDB admin panel HTML page"""
+    mongo_admin_file = os.path.join(static_dir, "mongo_admin.html")
+    if os.path.exists(mongo_admin_file):
+        return FileResponse(mongo_admin_file, media_type='text/html')
+    return {"error": "MongoDB admin panel not found"}
+
 @app.post("/seed-database")
 async def seed_database():
     """Manually trigger database seeding"""
