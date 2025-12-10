@@ -24,8 +24,10 @@ class SimplifiedLessonService:
         from app.services.lesson_service import LessonService
         self.lesson_service = LessonService(db)
         self.lessons_by_character = {}  # Cache for loaded lessons
-        from app.services.ai_service import call_gemini
+        self.characters_by_id = {}  # Cache for loaded characters
+        from app.services.ai_service import call_gemini, load_character
         self.call_gemini = call_gemini
+        self.load_character = load_character
 
     async def _get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get character lesson data from MongoDB or cache"""
@@ -111,7 +113,7 @@ class SimplifiedLessonService:
                     return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
                 else:
                     # Generate AI feedback for text input answers
-                    ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
+                    ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
                     emotion = self._determine_feedback_emotion(ai_feedback)
                     return {
                         "valid": False,
@@ -146,7 +148,7 @@ class SimplifiedLessonService:
                 return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
 
         # Generate contextual AI feedback for wrong answers
-        ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
+        ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
 
         # Determine emotion from the generated feedback
         emotion = self._determine_feedback_emotion(ai_feedback)
@@ -177,10 +179,15 @@ class SimplifiedLessonService:
         else:
             return "normal"
 
-    async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], lesson_type: str) -> str:
-        """Generate contextual AI feedback for wrong answers in Roman Punjabi only."""
+    async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], character_id: str) -> str:
+        """Generate contextual AI feedback with character personality context in Roman Punjabi only."""
         if not user_answer.strip():
             return "Jawab deo ji."
+
+        # Load character context
+        character = await self.load_character(character_id)
+        if not character:
+            character = {"name": "Teacher", "personality": "helpful", "role": "teacher"}
 
         # Extract lesson context
         character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
@@ -188,33 +195,34 @@ class SimplifiedLessonService:
         correct_answers = step.get("correctAnswers", [])
 
         prompt = f"""
-You are a Punjabi language tutor. Evaluate student answers contextually and provide feedback ONLY in Roman Punjabi.
+You are {character.get('name', 'Teacher')}, a {character.get('role', 'teacher')} with personality: {character.get('personality', 'helpful')}.
 
 Lesson Context:
-Character: {character_message}
 Question: {question}
-User Answer: {user_answer}
-Acceptable Answers: {", ".join(correct_answers)}
+Expected Answers: {", ".join(correct_answers)}
+Student Answer: {user_answer}
 
-Evaluation Steps:
-1. First, determine if the user's answer makes contextual sense for the question asked
-2. If contextually wrong: Point out why it's not suitable for this question
-3. If contextually okay: Check Roman Punjabi spelling, grammar, and syntax errors
-4. Point out ONLY the mistakes - do not mention correct parts
-5. Provide specific corrections in Roman Punjabi
+Validation Rules:
+1. ACCEPT answers that are contextually appropriate, even if not exact matches
+2. ACCEPT answers that show understanding of the concept in Punjabi
+3. ACCEPT alternative valid ways to express the same idea
+4. Only CORRECT if the answer is completely incorrect for context
 
-Response Rules:
-- Respond STRICTLY in Roman Punjabi only (no English, no Gurmukhi)
-- Be encouraging but direct
+Feedback Instructions:
+- Use character's personality and speaking style: {character.get('speaking_style', 'friendly')}
+- If answer is acceptable: Accept it warmly and encourage
+- If needs small corrections: Suggest improvements helpfully
+- If completely wrong: Guide towards correct understanding
+- Respond ONLY in Roman Punjabi using character's speaking pattern
 
-Generate Roman Punjabi feedback:
+Character's typical responses would be: {character.get('conversation_topics', 'warm, encouraging')}
+
+Generate feedback in character's voice:
 """
-#  - For spelling: "Tusi 'galat' likhe ho, 'sahi' likho"
-#  - For syntax: "Tusi wrong order use kiya, karo: ..."
-#  - For contextual: "Eh jawab is sawaal nu suit nahi karta"
+
         try:
-            feedback = await self.call_gemini(prompt, max_tokens=80)
+            feedback = await self.call_gemini(prompt, max_tokens=100)
             return feedback.strip()
         except Exception as e:
             # Fallback in Roman Punjabi
-            return "Galat hai. Dubara try karo."
+            return "Theek hai ji, continue karo."
