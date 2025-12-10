@@ -126,8 +126,10 @@ async def submit_answer(
                     "timestamp": datetime.utcnow()
                 }
                 await db.character_interactions.insert_one(emotion_data)
-            except Exception:
+                print(f"Saved emotion: {result['emotion']} for user {request.user_id}, character {request.character_id}")
+            except Exception as e:
                 # Don't fail the request if emotion saving fails
+                print(f"Failed to save emotion: {e}")
                 pass
 
         if result["valid"] and result["advance"]:

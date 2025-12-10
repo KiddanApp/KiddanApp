@@ -164,15 +164,15 @@ class SimplifiedLessonService:
         return await self._get_character_data(character_id)
 
     def _determine_feedback_emotion(self, feedback: str) -> str:
-        """Determine emotion from feedback text (same logic as ai_service)"""
+        """Determine emotion from feedback text (includes both English and Roman Punjabi keywords)"""
         feedback_lower = feedback.lower()
 
-        # Check for emotion keywords in the feedback
-        if any(word in feedback_lower for word in ["happy", "great", "wonderful", "love", "excited", "wah", "bahut vadiya", "shabaash"]):
+        # Check for emotion keywords in the feedback (English and Roman Punjabi)
+        if any(word in feedback_lower for word in ["happy", "great", "wonderful", "love", "excited", "wah", "bahut vadiya", "shabaash", "bahut accha", "vaah", "great"]):
             return "happy"
-        elif any(word in feedback_lower for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated", "galat", "kush nahi"]):
+        elif any(word in feedback_lower for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated", "galat", "kush nahi", "suit nahi karta", "galat nahi", "wrong nahi"]):
             return "angry"
-        elif any(word in feedback_lower for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate", "dukhi", "naraaz"]):
+        elif any(word in feedback_lower for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate", "dukhi", "naraaz", "gam", "dard"]):
             return "sad"
         else:
             return "normal"
