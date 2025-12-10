@@ -95,12 +95,14 @@ Keep responses conversational and engaging. Remember previous messages in this c
     )
 
     # Determine expression based on content
-    expression = "neutral"
+    expression = "normal"
     lower_english = english.lower()
     if any(word in lower_english for word in ["happy", "great", "wonderful", "love", "excited"]):
         expression = "happy"
-    elif any(word in lower_english for word in ["angry", "upset", "sorry", "wrong", "bad"]):
+    elif any(word in lower_english for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated"]):
         expression = "angry"
+    elif any(word in lower_english for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate"]):
+        expression = "sad"
 
     # Save to database
     message_data = {

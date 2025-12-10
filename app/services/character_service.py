@@ -275,10 +275,12 @@ class CharacterService:
             # Determine expression based on content (same logic as ai_service)
             if any(word in ai_message for word in ["happy", "great", "wonderful", "love", "excited"]):
                 return "happy"
-            elif any(word in ai_message for word in ["angry", "upset", "sorry", "wrong", "bad"]):
+            elif any(word in ai_message for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated"]):
                 return "angry"
+            elif any(word in ai_message for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate"]):
+                return "sad"
             else:
-                return "neutral"
+                return "normal"
 
         except Exception:
             # Default to happy if there's any error
