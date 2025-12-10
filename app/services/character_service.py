@@ -240,12 +240,12 @@ class CharacterService:
         return completed_questions
 
     async def _determine_character_emotion(self, user_id: str, character_id: str) -> str:
-        """Determine the current emotion of a character based on their last chat message"""
+        """Determine the current emotion of a character based on their last interaction (chat or lesson)"""
         if not user_id:
             return "happy"
 
         try:
-            # Get the most recent message for this user and character
+            # Get the most recent interaction for this user and character
             pipeline = [
                 {
                     "$match": {
@@ -261,26 +261,15 @@ class CharacterService:
                 }
             ]
 
-            cursor = self.collection.database.messages.aggregate(pipeline)
-            messages = []
+            cursor = self.collection.database.character_interactions.aggregate(pipeline)
+            interactions = []
             async for doc in cursor:
-                messages.append(doc)
+                interactions.append(doc)
 
-            if not messages:
-                return "happy"
-
-            last_message = messages[0]
-            ai_message = last_message.get("ai_message_english", "").lower()
-
-            # Determine expression based on content (same logic as ai_service)
-            if any(word in ai_message for word in ["happy", "great", "wonderful", "love", "excited"]):
-                return "happy"
-            elif any(word in ai_message for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated"]):
-                return "angry"
-            elif any(word in ai_message for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate"]):
-                return "sad"
+            if interactions:
+                return interactions[0].get("emotion", "happy")
             else:
-                return "normal"
+                return "happy"
 
         except Exception:
             # Default to happy if there's any error

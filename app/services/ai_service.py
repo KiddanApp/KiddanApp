@@ -118,6 +118,21 @@ Keep responses conversational and engaging. Remember previous messages in this c
     }
     await db.messages.insert_one(message_data)
 
+    # Save emotion interaction for characters list
+    if user_id:
+        try:
+            emotion_data = {
+                "user_id": user_id,
+                "character_id": character_id,
+                "emotion": expression,
+                "interaction_type": "chat",
+                "timestamp": datetime.utcnow()
+            }
+            await db.character_interactions.insert_one(emotion_data)
+        except Exception:
+            # Don't fail the request if emotion saving fails
+            pass
+
     return {
         "character_id": character_id,
         "conversation_id": conversation_id,

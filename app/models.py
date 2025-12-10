@@ -21,7 +21,7 @@ class CharacterMessage(BaseModel):
     additionalNotes: Optional[str] = None
 
 class LessonStep(BaseModel):
-    lessonType: str  # "info", "multiple-choice", "text-input", "feedback", "completion"
+    lessonType: str
     emotion: Optional[str] = None
     characterMessage: Optional[CharacterMessage] = None
     question: str
@@ -66,4 +66,12 @@ class UserLessonProgress(BaseModel):
     current_lesson_index: int = 0  # Index in character's lessons array
     current_step_index: int = 0    # Index in current lesson's steps array
     completed: bool = False
+    id: Optional[str] = None
+
+class CharacterInteraction(BaseModel):
+    user_id: str
+    character_id: str
+    emotion: str
+    interaction_type: str  # "chat" or "lesson"
+    timestamp: datetime = datetime.utcnow()
     id: Optional[str] = None

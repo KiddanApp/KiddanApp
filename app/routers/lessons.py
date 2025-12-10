@@ -6,6 +6,7 @@ from app.services.progress_service import ProgressService
 from app.services.simplified_lesson_service import SimplifiedLessonService
 from app.schemas import AnswerResponse
 from pydantic import BaseModel
+from datetime import datetime
 
 router = APIRouter()
 
@@ -113,6 +114,21 @@ async def submit_answer(
         result = await lesson_service.validate_answer(
             progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer
         )
+
+        # Save emotion interaction if emotion is present
+        if "emotion" in result:
+            try:
+                emotion_data = {
+                    "user_id": request.user_id,
+                    "character_id": request.character_id,
+                    "emotion": result["emotion"],
+                    "interaction_type": "lesson",
+                    "timestamp": datetime.utcnow()
+                }
+                await db.character_interactions.insert_one(emotion_data)
+            except Exception:
+                # Don't fail the request if emotion saving fails
+                pass
 
         if result["valid"] and result["advance"]:
             # Advance to next step
