@@ -98,6 +98,7 @@ async def get_next(
 @router.post("/answer", response_model=AnswerResponse)
 async def submit_answer(
     request: AnswerRequest,
+    db: AsyncIOMotorDatabase = Depends(get_database),
     progress_service: ProgressService = Depends(get_progress_service),
     lesson_service: SimplifiedLessonService = Depends(get_simplified_lesson_service)
 ):
