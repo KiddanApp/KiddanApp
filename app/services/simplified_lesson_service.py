@@ -108,31 +108,34 @@ class SimplifiedLessonService:
             if match:
                 expected = match.group(1)  # Keep the original text for feedback
                 if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
-                    return {"valid": True, "advance": True, "feedback": "Correct!"}
+                    return {"valid": True, "advance": True, "feedback": "Correct!", "emotion": "happy"}
                 else:
                     # Generate AI feedback for text input answers
                     ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
+                    emotion = self._determine_feedback_emotion(ai_feedback)
                     return {
                         "valid": False,
                         "advance": False,
                         "feedback": ai_feedback,
-                        "retry": True
+                        "retry": True,
+                        "emotion": emotion
                     }
             else:
                 # No quotes found, accept any non-empty answer
                 if user_answer.strip():
-                    return {"valid": True, "advance": True, "feedback": "Accepted"}
+                    return {"valid": True, "advance": True, "feedback": "Accepted", "emotion": "normal"}
                 else:
                     return {
                         "valid": False,
                         "advance": False,
                         "feedback": "Please provide an answer",
-                        "retry": True
+                        "retry": True,
+                        "emotion": "normal"
                     }
 
         if not correct_answers:
             # No correct answers defined
-            return {"valid": True, "advance": True, "feedback": "Accepted"}
+            return {"valid": True, "advance": True, "feedback": "Accepted", "emotion": "normal"}
 
         # Normalize user_answer using comprehensive normalization
         normalized_answer = self.normalize_text(user_answer)
@@ -140,21 +143,39 @@ class SimplifiedLessonService:
         # Check if any correct answer matches (also normalize correct answers)
         for correct in correct_answers:
             if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
-                return {"valid": True, "advance": True, "feedback": "Correct!"}
+                return {"valid": True, "advance": True, "feedback": "Correct!", "emotion": "happy"}
 
         # Generate contextual AI feedback for wrong answers
         ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
+
+        # Determine emotion from the generated feedback
+        emotion = self._determine_feedback_emotion(ai_feedback)
 
         return {
             "valid": False,
             "advance": False,
             "feedback": ai_feedback,
-            "retry": True
+            "retry": True,
+            "emotion": emotion
         }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the full character lesson data"""
         return await self._get_character_data(character_id)
+
+    def _determine_feedback_emotion(self, feedback: str) -> str:
+        """Determine emotion from feedback text (same logic as ai_service)"""
+        feedback_lower = feedback.lower()
+
+        # Check for emotion keywords in the feedback
+        if any(word in feedback_lower for word in ["happy", "great", "wonderful", "love", "excited", "wah", "bahut vadiya", "shabaash"]):
+            return "happy"
+        elif any(word in feedback_lower for word in ["angry", "upset", "sorry", "wrong", "bad", "mad", "frustrated", "galat", "kush nahi"]):
+            return "angry"
+        elif any(word in feedback_lower for word in ["sad", "unhappy", "disappointed", "heartbroken", "depressed", "unfortunate", "dukhi", "naraaz"]):
+            return "sad"
+        else:
+            return "normal"
 
     async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], lesson_type: str) -> str:
         """Generate contextual AI feedback for wrong answers in Roman Punjabi only."""

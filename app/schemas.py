@@ -17,6 +17,13 @@ class ChatRequest(BaseModel):
     message: str
     language: str  # "english" | "roman" | "gurmukhi"
 
+class AnswerResponse(BaseModel):
+    valid: bool
+    advance: bool
+    feedback: str
+    retry: bool = False
+    emotion: str = "normal"  # Emotion determined from the feedback content
+
 class ChatReply(BaseModel):
     character_id: str
     conversation_id: str

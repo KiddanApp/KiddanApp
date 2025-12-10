@@ -4,6 +4,7 @@ from app.db import get_database
 from app.services.lesson_service import LessonService
 from app.services.progress_service import ProgressService
 from app.services.simplified_lesson_service import SimplifiedLessonService
+from app.schemas import AnswerResponse
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -93,7 +94,7 @@ async def get_next(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting next: {str(e)}")
 
-@router.post("/answer")
+@router.post("/answer", response_model=AnswerResponse)
 async def submit_answer(
     request: AnswerRequest,
     progress_service: ProgressService = Depends(get_progress_service),
