@@ -88,11 +88,11 @@ class SimplifiedLessonService:
         """Validate user answer and return result for a character"""
         lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
-            return {"valid": False, "error": "Lesson not found"}
+            return {"valid": False, "advance": False, "feedback": "Lesson not found", "emotion": "normal"}
 
         steps = lesson.get("steps", [])
         if current_step_index >= len(steps):
-            return {"valid": False, "error": "Lesson completed"}
+            return {"valid": False, "advance": False, "feedback": "Lesson completed", "emotion": "normal"}
 
         step = steps[current_step_index]
         lesson_type = step.get("lessonType")
@@ -108,7 +108,7 @@ class SimplifiedLessonService:
             if match:
                 expected = match.group(1)  # Keep the original text for feedback
                 if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
-                    return {"valid": True, "advance": True, "feedback": "Correct!", "emotion": "happy"}
+                    return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
                 else:
                     # Generate AI feedback for text input answers
                     ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
@@ -123,7 +123,7 @@ class SimplifiedLessonService:
             else:
                 # No quotes found, accept any non-empty answer
                 if user_answer.strip():
-                    return {"valid": True, "advance": True, "feedback": "Accepted", "emotion": "normal"}
+                    return {"valid": True, "advance": True, "feedback": "Accepted", "retry": False, "emotion": "normal"}
                 else:
                     return {
                         "valid": False,
@@ -135,7 +135,7 @@ class SimplifiedLessonService:
 
         if not correct_answers:
             # No correct answers defined
-            return {"valid": True, "advance": True, "feedback": "Accepted", "emotion": "normal"}
+            return {"valid": True, "advance": True, "feedback": "Accepted", "retry": False, "emotion": "normal"}
 
         # Normalize user_answer using comprehensive normalization
         normalized_answer = self.normalize_text(user_answer)
@@ -143,7 +143,7 @@ class SimplifiedLessonService:
         # Check if any correct answer matches (also normalize correct answers)
         for correct in correct_answers:
             if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
-                return {"valid": True, "advance": True, "feedback": "Correct!", "emotion": "happy"}
+                return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
 
         # Generate contextual AI feedback for wrong answers
         ai_feedback = await self.generate_ai_feedback(user_answer, step, lesson_type)
