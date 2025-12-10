@@ -206,13 +206,12 @@ Evaluation Steps:
 Response Rules:
 - Respond STRICTLY in Roman Punjabi only (no English, no Gurmukhi)
 - Be encouraging but direct
-- For spelling: "Tusi 'galat' likhe ho, 'sahi' likho"
-- For syntax: "Tusi wrong order use kiya, karo: ..."
-- For contextual: "Eh jawab is sawaal nu suit nahi karta"
 
 Generate Roman Punjabi feedback:
 """
-
+#  - For spelling: "Tusi 'galat' likhe ho, 'sahi' likho"
+#  - For syntax: "Tusi wrong order use kiya, karo: ..."
+#  - For contextual: "Eh jawab is sawaal nu suit nahi karta"
         try:
             feedback = await self.call_gemini(prompt, max_tokens=80)
             return feedback.strip()
