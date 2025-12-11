@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, Dict, List, Any
 import re
 import asyncio
+import difflib
 
 class SimplifiedLessonService:
     def normalize_text(self, text: str) -> str:
@@ -19,6 +20,33 @@ class SimplifiedLessonService:
         clean = clean.lower()
 
         return clean.strip()
+
+    def calculate_similarity(self, str1: str, str2: str) -> float:
+        """Calculate similarity ratio between two strings using SequenceMatcher."""
+        return difflib.SequenceMatcher(None, str1, str2).ratio()
+
+    def generate_mistake_feedback(self, user_answer: str, correct_answer: str) -> str:
+        """Generate feedback highlighting mistakes in Roman Punjabi."""
+        # Use difflib.ndiff to find differences at word level
+        diff = list(difflib.ndiff(correct_answer.split(), user_answer.split()))
+
+        # Collect mistakes
+        mistakes = []
+        for item in diff:
+            if item.startswith('- '):
+                # Missing from user answer
+                mistakes.append(f"missing: {item[2:]}")
+            elif item.startswith('+ '):
+                # Extra in user answer
+                mistakes.append(f"extra: {{{item[2:]}}}")
+
+        if mistakes:
+            wrong_text = ', '.join(mistakes)
+            feedback = f"Ye galat hai Roman Punjabi mein. Tumne likha: \"{user_answer}\". Galat hissa: {wrong_text}"
+        else:
+            feedback = f"Ye galat hai Roman Punjabi mein. Tumne likha: \"{user_answer}\". Sahi jawab: \"{correct_answer}\""
+
+        return feedback
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         from app.services.lesson_service import LessonService
@@ -147,19 +175,49 @@ class SimplifiedLessonService:
             if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
                 return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
 
-        # Generate contextual AI feedback for wrong answers
-        ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+        # Find the best matching correct answer
+        best_similarity = 0.0
+        best_correct = ""
+        for correct in correct_answers:
+            if isinstance(correct, str):
+                sim = self.calculate_similarity(normalized_answer, self.normalize_text(correct))
+                if sim > best_similarity:
+                    best_similarity = sim
+                    best_correct = correct
 
-        # Determine emotion from the generated feedback
-        emotion = self._determine_feedback_emotion(ai_feedback)
-
-        return {
-            "valid": False,
-            "advance": False,
-            "feedback": ai_feedback,
-            "retry": True,
-            "emotion": emotion
-        }
+        # If similarity > 60%, generate mistake feedback
+        if best_similarity > 0.6:
+            feedback = self.generate_mistake_feedback(user_answer, best_correct)
+            emotion = "normal"  # Since it's showing mistakes, neutral emotion
+            # Allow AI to override if contextually correct
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            ai_emotion = self._determine_feedback_emotion(ai_feedback)
+            if ai_emotion == "happy":
+                # AI says correct, so accept
+                return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
+            else:
+                return {
+                    "valid": False,
+                    "advance": False,
+                    "feedback": feedback,
+                    "retry": True,
+                    "emotion": emotion
+                }
+        else:
+            # Low similarity, use AI feedback
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            emotion = self._determine_feedback_emotion(ai_feedback)
+            if emotion == "happy":
+                # AI accepts contextually
+                return {"valid": True, "advance": True, "feedback": ai_feedback, "retry": False, "emotion": emotion}
+            else:
+                return {
+                    "valid": False,
+                    "advance": False,
+                    "feedback": ai_feedback,
+                    "retry": True,
+                    "emotion": emotion
+                }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the full character lesson data"""
