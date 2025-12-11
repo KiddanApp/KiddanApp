@@ -264,14 +264,15 @@ Validation Rules:
 1. ACCEPT answers that are contextually appropriate, even if not exact matches
 2. ACCEPT answers that show understanding of the concept in Punjabi
 3. ACCEPT alternative valid ways to express the same idea
-4. Only CORRECT if the answer is completely incorrect for context
+4. REJECT answers that are completely unrelated or show no understanding
 
 Feedback Instructions:
 - Use character's personality and speaking style: {character.get('speaking_style', 'friendly')}
 - If answer is acceptable: Accept it warmly and encourage
 - If needs small corrections: Suggest improvements helpfully
-- If completely wrong: Guide towards correct understanding
+- If completely wrong/unrelated: Clearly indicate it's incorrect and guide towards the right answer
 - Respond ONLY in Roman Punjabi using character's speaking pattern
+- For wrong answers, be educational and point to the correct answer
 
 Character's typical responses would be: {character.get('conversation_topics', 'warm, encouraging')}
 
@@ -282,5 +283,10 @@ Generate feedback in character's voice:
             feedback = await self.call_gemini(prompt, max_tokens=100)
             return feedback.strip()
         except Exception as e:
-            # Fallback in Roman Punjabi
-            return "Theek hai ji, continue karo."
+            # Fallback feedback based on context - provide educational correction
+            if not user_answer.strip():
+                return "Jawab deo ji."
+            else:
+                # For wrong answers, provide correction guidance
+                correct_text = ", ".join(correct_answers) if correct_answers else "sahi jawab"
+                return f"Ye galat hai. Sahi jawab '{correct_text}' hai. Try karo ji."
