@@ -115,7 +115,7 @@ class SimplifiedLessonService:
             }
 
     async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
-        """Validate user answer and return result for a character - FIXED to allow progression"""
+        """Validate user answer and return result for a character"""
         lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "advance": False, "feedback": "Lesson not found", "emotion": "normal"}
@@ -140,14 +140,14 @@ class SimplifiedLessonService:
                 if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
                     return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
                 else:
-                    # Generate AI feedback for text input answers - FIXED to allow progression
+                    # Generate AI feedback for text input answers
                     ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
                     emotion = self._determine_feedback_emotion(ai_feedback)
                     return {
                         "valid": False,
-                        "advance": True,  # FIXED: Allow progression
+                        "advance": False,
                         "feedback": ai_feedback,
-                        "retry": False,   # FIXED: Don't force retry
+                        "retry": True,
                         "emotion": emotion
                     }
             else:
@@ -157,9 +157,9 @@ class SimplifiedLessonService:
                 else:
                     return {
                         "valid": False,
-                        "advance": True,  # FIXED: Allow progression even for empty answers
+                        "advance": False,
                         "feedback": "Please provide an answer",
-                        "retry": False,   # FIXED: Don't force retry
+                        "retry": True,
                         "emotion": "normal"
                     }
 
@@ -196,28 +196,26 @@ class SimplifiedLessonService:
                 # AI says correct, so accept
                 return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
             else:
-                # FIXED: Allow progression with educational feedback
                 return {
                     "valid": False,
-                    "advance": True,  # FIXED: Allow progression
+                    "advance": False,
                     "feedback": feedback,
-                    "retry": False,   # FIXED: Don't force retry
+                    "retry": True,
                     "emotion": emotion
                 }
         else:
-            # Low similarity, use AI feedback - FIXED to allow progression
+            # Low similarity, use AI feedback
             ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
             emotion = self._determine_feedback_emotion(ai_feedback)
             if emotion == "happy":
                 # AI accepts contextually
                 return {"valid": True, "advance": True, "feedback": ai_feedback, "retry": False, "emotion": emotion}
             else:
-                # FIXED: Allow progression with feedback for learning
                 return {
                     "valid": False,
-                    "advance": True,  # FIXED: Allow progression
+                    "advance": False,
                     "feedback": ai_feedback,
-                    "retry": False,   # FIXED: Don't force retry
+                    "retry": True,
                     "emotion": emotion
                 }
 
