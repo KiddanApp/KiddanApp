@@ -115,7 +115,7 @@ class SimplifiedLessonService:
             }
 
     async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
-        """Validate user answer and return result for a character - FIXED to allow progression"""
+        """Validate user answer with AI-prioritized contextual evaluation - ENHANCED"""
         lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "advance": False, "feedback": "Lesson not found", "emotion": "normal"}
@@ -126,56 +126,80 @@ class SimplifiedLessonService:
 
         step = steps[current_step_index]
         lesson_type = step.get("lessonType")
-
         correct_answers = step.get("correctAnswers", [])
 
-        # For text inputs, if no correctAnswers, try to extract expected answer from message
+        # Handle empty answers
+        if not user_answer.strip():
+            return {"valid": False, "advance": True, "feedback": "Jawab deo ji.", "retry": False, "emotion": "normal"}
+
+        # For MCQ questions - use contextual AI evaluation
+        if lesson_type in ["mcq", "multiple-choice"]:
+            # First try exact matching for efficiency
+            normalized_answer = self.normalize_text(user_answer)
+            for correct in correct_answers:
+                if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
+                    return {"valid": True, "advance": True, "feedback": "Bahut accha! Sahi jawab.", "retry": False, "emotion": "happy"}
+
+            # Use AI for contextual evaluation of MCQ answers
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            emotion = self._determine_feedback_emotion(ai_feedback)
+            is_correct = emotion == "happy"
+            return {
+                "valid": is_correct,
+                "advance": True,  # Always allow progression for MCQ
+                "feedback": ai_feedback,
+                "retry": False,
+                "emotion": emotion
+            }
+
+        # For text inputs without predefined correct answers
         if lesson_type in ["text", "text-input"] and not correct_answers:
             character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
-            # Extract text in quotes after "Likho:" or "Type in Roman Punjabi:" phrases
-            # Match text in quotes
             match = re.search(r'"([^"]+)"', character_message)
             if match:
-                expected = match.group(1)  # Keep the original text for feedback
+                expected = match.group(1)
                 if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
-                    return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
-                else:
-                    # Generate AI feedback for text input answers - FIXED to allow progression
-                    ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-                    emotion = self._determine_feedback_emotion(ai_feedback)
-                    return {
-                        "valid": False,
-                        "advance": True,  # FIXED: Allow progression
-                        "feedback": ai_feedback,
-                        "retry": False,   # FIXED: Don't force retry
-                        "emotion": emotion
-                    }
-            else:
-                # No quotes found, accept any non-empty answer
-                if user_answer.strip():
-                    return {"valid": True, "advance": True, "feedback": "Accepted", "retry": False, "emotion": "normal"}
-                else:
-                    return {
-                        "valid": False,
-                        "advance": True,  # FIXED: Allow progression even for empty answers
-                        "feedback": "Please provide an answer",
-                        "retry": False,   # FIXED: Don't force retry
-                        "emotion": "normal"
-                    }
+                    return {"valid": True, "advance": True, "feedback": "Perfect!", "retry": False, "emotion": "happy"}
 
+            # Use AI evaluation for open-ended text responses
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            emotion = self._determine_feedback_emotion(ai_feedback)
+            return {
+                "valid": emotion == "happy",  # AI determines correctness
+                "advance": True,
+                "feedback": ai_feedback,
+                "retry": False,
+                "emotion": emotion
+            }
+
+        # No correct answers defined - accept and provide AI feedback
         if not correct_answers:
-            # No correct answers defined
-            return {"valid": True, "advance": True, "feedback": "Accepted", "retry": False, "emotion": "normal"}
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            emotion = self._determine_feedback_emotion(ai_feedback)
+            return {
+                "valid": True,
+                "advance": True,
+                "feedback": ai_feedback,
+                "retry": False,
+                "emotion": emotion
+            }
 
-        # Normalize user_answer using comprehensive normalization
+        # PRIORITIZE AI EVALUATION for answers with correct_answers defined
+        # Generate AI feedback first to understand context
+        ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+        ai_emotion = self._determine_feedback_emotion(ai_feedback)
+
+        # If AI says it's correct, accept it regardless of text matching
+        if ai_emotion == "happy":
+            return {"valid": True, "advance": True, "feedback": ai_feedback, "retry": False, "emotion": ai_emotion}
+
+        # AI says it's not correct - check for exact matches as fallback
         normalized_answer = self.normalize_text(user_answer)
-
-        # Check if any correct answer matches (also normalize correct answers)
         for correct in correct_answers:
             if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
                 return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
 
-        # Find the best matching correct answer
+        # Check similarity for close matches
         best_similarity = 0.0
         best_correct = ""
         for correct in correct_answers:
@@ -185,41 +209,24 @@ class SimplifiedLessonService:
                     best_similarity = sim
                     best_correct = correct
 
-        # If similarity > 60%, generate mistake feedback
-        if best_similarity > 0.6:
-            feedback = self.generate_mistake_feedback(user_answer, best_correct)
-            emotion = "normal"  # Since it's showing mistakes, neutral emotion
-            # Allow AI to override if contextually correct
-            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-            ai_emotion = self._determine_feedback_emotion(ai_feedback)
-            if ai_emotion == "happy":
-                # AI says correct, so accept
-                return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
-            else:
-                # FIXED: Allow progression with educational feedback
-                return {
-                    "valid": False,
-                    "advance": True,  # FIXED: Allow progression
-                    "feedback": feedback,
-                    "retry": False,   # FIXED: Don't force retry
-                    "emotion": emotion
-                }
-        else:
-            # Low similarity, use AI feedback - FIXED to allow progression
-            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-            emotion = self._determine_feedback_emotion(ai_feedback)
-            if emotion == "happy":
-                # AI accepts contextually
-                return {"valid": True, "advance": True, "feedback": ai_feedback, "retry": False, "emotion": emotion}
-            else:
-                # FIXED: Allow progression with feedback for learning
-                return {
-                    "valid": False,
-                    "advance": True,  # FIXED: Allow progression
-                    "feedback": ai_feedback,
-                    "retry": False,   # FIXED: Don't force retry
-                    "emotion": emotion
-                }
+        # For high similarity, provide gentle correction
+        if best_similarity > 0.7:  # Lowered threshold for more acceptance
+            return {
+                "valid": True,  # Accept close matches to encourage learning
+                "advance": True,
+                "feedback": ai_feedback,  # Use AI feedback for gentle correction
+                "retry": False,
+                "emotion": ai_emotion
+            }
+
+        # Use AI feedback for low similarity cases
+        return {
+            "valid": False,  # Allow progression but mark as needing improvement
+            "advance": True,  # Always allow progression for learning
+            "feedback": ai_feedback,
+            "retry": False,
+            "emotion": ai_emotion
+        }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get the full character lesson data"""
@@ -240,7 +247,7 @@ class SimplifiedLessonService:
             return "normal"
 
     async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], character_id: str) -> str:
-        """Generate contextual AI feedback with character personality context in Roman Punjabi only."""
+        """Generate contextual AI feedback with character personality context - ENHANCED for better evaluation"""
         if not user_answer.strip():
             return "Jawab deo ji."
 
@@ -249,46 +256,72 @@ class SimplifiedLessonService:
         if not character:
             character = {"name": "Teacher", "personality": "helpful", "role": "teacher"}
 
-        # Extract lesson context
+        # Extract comprehensive lesson context
         character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
         question = step.get("question", "")
         correct_answers = step.get("correctAnswers", [])
+        lesson_type = step.get("lessonType", "")
+
+        # Build conversation context from previous interactions if available
+        conversation_context = ""
+        if hasattr(self, 'conversation_history') and self.conversation_history:
+            recent_messages = self.conversation_history[-3:]  # Last 3 exchanges
+            conversation_context = "\nRecent conversation:\n" + "\n".join([
+                f"User: {msg.get('user_message', '')}\nAI: {msg.get('ai_message_roman', '')}"
+                for msg in recent_messages
+            ])
 
         prompt = f"""
 You are {character.get('name', 'Teacher')}, a {character.get('role', 'teacher')} with personality: {character.get('personality', 'helpful')}.
 
-Lesson Context:
-Question: {question}
-Expected Answers: {", ".join(correct_answers)}
-Student Answer: {user_answer}
+LESSON CONTEXT:
+- Character's message: {character_message}
+- Question asked: {question}
+- Expected correct answers: {", ".join(correct_answers)}
+- Question type: {lesson_type}
+{conversation_context}
 
-Validation Rules:
-1. ACCEPT answers that are contextually appropriate, even if not exact matches
-2. ACCEPT answers that show understanding of the concept in Punjabi
-3. ACCEPT alternative valid ways to express the same idea
-4. REJECT answers that are completely unrelated or show no understanding
+STUDENT ANSWER: "{user_answer}"
 
-Feedback Instructions:
-- Use character's personality and speaking style: {character.get('speaking_style', 'friendly')}
-- If answer is acceptable: Accept it warmly and encourage
-- If needs small corrections: Suggest improvements helpfully
-- If completely wrong/unrelated: Clearly indicate it's incorrect and guide towards the right answer
-- Respond ONLY in Roman Punjabi using character's speaking pattern
-- For wrong answers, be educational and point to the correct answer
+EVALUATION INSTRUCTIONS:
+1. **PRIMARY GOAL**: Evaluate if the student's answer shows understanding of the concept, even if not perfectly worded
+2. **ACCEPT** if answer demonstrates comprehension, even with:
+   - Spelling variations in Roman Punjabi
+   - Different word choices that convey the same meaning
+   - Partial answers that address the core concept
+   - Cultural/contextual understanding
+3. **ACCEPT** alternative expressions that are conversationally appropriate
+4. **GUIDE GENTLY** for minor mistakes - don't punish learning
+5. **ONLY REJECT** if completely unrelated or shows no understanding
 
-Character's typical responses would be: {character.get('conversation_topics', 'warm, encouraging')}
+RESPONSE STYLE:
+- Use character's personality: {character.get('speaking_style', 'friendly and encouraging')}
+- Respond in Roman Punjabi only
+- Be warm and supportive, like a family member teaching
+- If correct: Celebrate and encourage more
+- If needs help: Guide gently without frustration
+- Focus on what they got right, then suggest improvements
+- Keep responses conversational and natural
 
-Generate feedback in character's voice:
+Your response should help the student learn while building confidence.
 """
 
         try:
-            feedback = await self.call_gemini(prompt, max_tokens=100)
+            feedback = await self.call_gemini(prompt, max_tokens=120)
             return feedback.strip()
         except Exception as e:
-            # Fallback feedback based on context - provide educational correction
+            # Enhanced fallback with better contextual understanding
             if not user_answer.strip():
                 return "Jawab deo ji."
-            else:
-                # For wrong answers, provide correction guidance
-                correct_text = ", ".join(correct_answers) if correct_answers else "sahi jawab"
-                return f"Ye galat hai. Sahi jawab '{correct_text}' hai. Try karo ji."
+
+            # Try to provide contextual fallback based on question type
+            if lesson_type in ["mcq", "multiple-choice"]:
+                # For MCQs, check if answer matches any option contextually
+                normalized_user = self.normalize_text(user_answer)
+                for correct in correct_answers:
+                    if self.calculate_similarity(normalized_user, self.normalize_text(correct)) > 0.6:
+                        return "Bahut accha! Sahi jawab."
+                return f"Try karo ji. Sahi options mein se ik choose karo."
+
+            # For text questions, provide general encouragement
+            return "Bahut accha try hai. Thoda aur practice karo ji."
