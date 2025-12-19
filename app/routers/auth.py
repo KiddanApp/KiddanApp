@@ -1,14 +1,20 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.schemas import UserSignup, UserLogin, UserOut
 from app.database import get_db
+from app.db import get_database
 from app.services.user_service import UserService
+from app.services.progress_service import ProgressService
 
 router = APIRouter()
 
 def get_user_service(session: AsyncSession = Depends(get_db)) -> UserService:
     return UserService(session)
+
+def get_progress_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> ProgressService:
+    return ProgressService(db)
 
 @router.post("/signup", response_model=UserOut)
 async def signup(
@@ -26,18 +32,19 @@ async def signup(
 
     try:
         user = await service.create_user(user_data.email, user_data.password)
-        # Set session
+
         response.set_cookie(
             key="user_id",
             value=user.id,
             httponly=True,
-            secure=False,  # Set to True in production with HTTPS
+            secure=False,  
             samesite="lax"
         )
         return UserOut(
             id=user.id,
             email=user.email,
-            created_at=user.created_at.isoformat()
+            created_at=user.created_at.isoformat(),
+            lessons_completed=[]
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -46,7 +53,8 @@ async def signup(
 async def login(
     user_data: UserLogin,
     response: Response,
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
+    progress_service: ProgressService = Depends(get_progress_service)
 ):
     user = await service.authenticate_user(user_data.email, user_data.password)
     if not user:
@@ -57,13 +65,19 @@ async def login(
         key="user_id",
         value=user.id,
         httponly=True,
-        secure=False,  
+        secure=False,
         samesite="lax"
     )
+
+    # Get completed lessons
+    progress_list = await progress_service.get_all_user_progress(user.id)
+    lessons_completed = [p.character_id for p in progress_list if p.completed]
+
     return UserOut(
         id=user.id,
         email=user.email,
-        created_at=user.created_at.isoformat()
+        created_at=user.created_at.isoformat(),
+        lessons_completed=lessons_completed
     )
 
 @router.post("/logout")
@@ -75,9 +89,10 @@ async def logout(response: Response):
 async def get_current_user(
     user_id: str,
     request: Request,
-    service: UserService = Depends(get_user_service)
+    service: UserService = Depends(get_user_service),
+    progress_service: ProgressService = Depends(get_progress_service)
 ):
-    
+
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -85,8 +100,13 @@ async def get_current_user(
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
 
+    # Get completed lessons
+    progress_list = await progress_service.get_all_user_progress(user_id)
+    lessons_completed = [p.character_id for p in progress_list if p.completed]
+
     return UserOut(
         id=user.id,
         email=user.email,
-        created_at=user.created_at.isoformat()
+        created_at=user.created_at.isoformat(),
+        lessons_completed=lessons_completed
     )

@@ -42,3 +42,4 @@ class UserOut(BaseModel):
     id: str
     email: str
     created_at: str
+    lessons_completed: List[str] = []
