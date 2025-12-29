@@ -322,6 +322,15 @@
             container.empty();
 
             lessons.forEach((lesson, index) => {
+                // Get character message from first step
+                const firstStep = lesson.steps?.[0];
+                const characterMessage = firstStep?.characterMessage?.romanPunjabi || 'No message set';
+
+                // Truncate long messages for display
+                const truncatedMessage = characterMessage.length > 100
+                    ? characterMessage.substring(0, 100) + '...'
+                    : characterMessage;
+
                 const lessonCard = $(`
                     <div class="lesson-card" data-lesson-id="${lesson.id}">
                         <div class="lesson-header">
@@ -338,6 +347,10 @@
                             </div>
                         </div>
                         <div class="p-3">
+                            <div class="mb-2">
+                                <small class="text-muted">Character Message:</small>
+                                <div class="mt-1 p-2 bg-light rounded small">${truncatedMessage}</div>
+                            </div>
                             <small class="text-muted">ID: ${lesson.id}</small>
                         </div>
                     </div>
