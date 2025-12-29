@@ -229,6 +229,29 @@
                 placeholder: 'sortable-placeholder',
                 update: handleLessonReorder
             });
+
+            // Handle step type changes
+            $(document).on('change', '.step-type', function() {
+                const stepCard = $(this).closest('.step-card');
+                const stepType = $(this).val();
+                const contentDiv = stepCard.find('.step-content');
+
+                // Create a mock step object for the new type
+                const mockStep = {
+                    lessonType: stepType,
+                    characterMessage: {
+                        romanPunjabi: '',
+                        gurmukhi: '',
+                        romanEnglish: '',
+                        additionalNotes: ''
+                    },
+                    question: '',
+                    options: [],
+                    correctAnswers: []
+                };
+
+                contentDiv.html(generateStepContent(mockStep));
+            });
         });
 
         // Verify admin key
