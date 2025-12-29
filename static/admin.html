@@ -590,6 +590,11 @@
                             <label class="form-label">Correct Answers (comma-separated)</label>
                             <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
                         </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Additional Notes (optional)</label>
+                            <input type="text" class="form-control form-control-sm" value="${step.characterMessage?.additionalNotes || ''}" data-field="additionalNotes">
+                        </div>
                     `;
                     break;
                 case 'text':
@@ -615,6 +620,11 @@
                         <div class="mb-2">
                             <label class="form-label">Correct Answers (comma-separated)</label>
                             <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Additional Notes (optional)</label>
+                            <input type="text" class="form-control form-control-sm" value="${step.characterMessage?.additionalNotes || ''}" data-field="additionalNotes">
                         </div>
                     `;
                     break;
