@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
                 lesson_service = LessonService(db)
 
                 for lesson_file in lessons_path.glob("*.json"):
-                    if lesson_file.name == "admin.html":
+                    if lesson_file.name == "admin.html" or lesson_file.name == "mongo_admin.html":
                         continue
 
                     try:
@@ -147,13 +147,16 @@ async def seed_database():
                 except Exception as e:
                     print(f"Error seeding character {char_id}: {e}")
 
-        # Seed lessons
-        lessons_path = Path(__file__).parent / "seed" / "lessons"
+        # Seed lessons from static folder (same as lifespan seeding)
+        lessons_path = Path(__file__).parent.parent / "static"
         if lessons_path.exists():
             from app.services.lesson_service import LessonService
             lesson_service = LessonService(db)
 
             for lesson_file in lessons_path.glob("*.json"):
+                if lesson_file.name == "admin.html" or lesson_file.name == "mongo_admin.html":
+                    continue
+
                 try:
                     with open(lesson_file, "r", encoding="utf-8") as f:
                         lesson_data = json.load(f)
@@ -163,6 +166,7 @@ async def seed_database():
                     if not existing:
                         await db.lessons.insert_one(lesson_doc.model_dump())
                         seeded_lessons += 1
+                        print(f"Seeded lessons for character: {lesson_doc.characterId}")
                 except Exception as e:
                     print(f"Error seeding lessons from {lesson_file.name}: {e}")
 

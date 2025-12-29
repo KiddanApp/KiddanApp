@@ -82,7 +82,6 @@ async def delete_character(
         raise HTTPException(status_code=404, detail="Character not found")
     return {"message": "Character deleted successfully"}
 
-# Lesson CRUD
 class InsertLessonRequest(BaseModel):
     position: int
     lesson: Lesson
@@ -156,13 +155,9 @@ async def get_character_lessons_admin(
     lessons = await service.get_character_lessons(character_id)
     if not lessons:
         raise HTTPException(status_code=404, detail="Lessons not found for character")
+
     return lessons.model_dump()
 
-
-
-
-
-# Step management endpoints
 @router.put("/lessons/{character_id}/{lesson_id}/steps/{step_index}")
 async def update_lesson_step(
     character_id: str,
