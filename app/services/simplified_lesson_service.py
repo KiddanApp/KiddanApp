@@ -3,7 +3,7 @@ from typing import Optional, Dict, List, Any
 import re
 import asyncio
 import difflib
-from evaluation_pipeline import evaluation_pipeline
+from ..evaluation_pipeline import evaluation_pipeline
 
 class SimplifiedLessonService:
     def normalize_text(self, text: str) -> str:
