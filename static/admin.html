@@ -674,10 +674,24 @@
                         step.question = stepCard.find('[data-field="question"]').val();
                         step.options = stepCard.find('[data-field="options"]').val().split('\n').filter(opt => opt.trim());
                         step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
+                        // Also collect character message for MCQ steps
+                        step.characterMessage = {
+                            romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
+                            gurmukhi: stepCard.find('[data-field="gurmukhi"]').val(),
+                            romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
+                            additionalNotes: ''
+                        };
                         break;
                     case 'text':
                         step.question = stepCard.find('[data-field="question"]').val();
                         step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
+                        // Also collect character message for text steps
+                        step.characterMessage = {
+                            romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
+                            gurmukhi: stepCard.find('[data-field="gurmukhi"]').val(),
+                            romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
+                            additionalNotes: ''
+                        };
                         break;
                     case 'feedback':
                     case 'completion':
