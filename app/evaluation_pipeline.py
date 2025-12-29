@@ -54,6 +54,8 @@ class EvaluationPipeline:
 User Answer: "{user_answer}"
 Correct Answer: "{correct_answer}"
 
+IMPORTANT: Ignore casing differences and punctuation when evaluating. Focus on meaning and content.
+
 Identify incorrect or missing parts.
 Respond in Roman Punjabi with:
 - What is wrong
