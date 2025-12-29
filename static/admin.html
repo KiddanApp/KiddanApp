@@ -712,8 +712,9 @@
                             romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
                             gurmukhi: stepCard.find('[data-field="gurmukhi"]').val(),
                             romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
-                            additionalNotes: ''
+                            additionalNotes: stepCard.find('[data-field="additionalNotes"]').val()
                         };
+                        
                         break;
                     case 'text':
                         step.question = stepCard.find('[data-field="question"]').val();
@@ -723,7 +724,7 @@
                             romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
                             gurmukhi: stepCard.find('[data-field="gurmukhi"]').val(),
                             romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
-                            additionalNotes: ''
+                            additionalNotes: stepCard.find('[data-field="additionalNotes"]').val()
                         };
                         break;
                     case 'feedback':
