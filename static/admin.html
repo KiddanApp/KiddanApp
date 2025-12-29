@@ -549,6 +549,20 @@
                             <label class="form-label">Options (one per line)</label>
                             <textarea class="form-control form-control-sm" rows="4" data-field="options">${(step.options || []).join('\n')}</textarea>
                         </div>
+
+                         <div class="mb-2">
+                            <label class="form-label">Roman Punjabi</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="romanPunjabi">${step.characterMessage?.romanPunjabi || ''}</textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Gurmukhi</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="gurmukhi">${step.characterMessage?.gurmukhi || ''}</textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">English</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="romanEnglish">${step.characterMessage?.romanEnglish || ''}</textarea>
+                        </div>
+                        
                         <div class="mb-2">
                             <label class="form-label">Correct Answers (comma-separated)</label>
                             <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
@@ -561,6 +575,20 @@
                             <label class="form-label">Question/Prompt</label>
                             <textarea class="form-control form-control-sm" rows="2" data-field="question">${step.question || ''}</textarea>
                         </div>
+
+                         <div class="mb-2">
+                            <label class="form-label">Roman Punjabi</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="romanPunjabi">${step.characterMessage?.romanPunjabi || ''}</textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Gurmukhi</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="gurmukhi">${step.characterMessage?.gurmukhi || ''}</textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">English</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="romanEnglish">${step.characterMessage?.romanEnglish || ''}</textarea>
+                        </div>
+
                         <div class="mb-2">
                             <label class="form-label">Correct Answers (comma-separated)</label>
                             <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
