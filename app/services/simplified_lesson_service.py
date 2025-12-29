@@ -94,25 +94,31 @@ class SimplifiedLessonService:
         step = steps[current_step_index]
         lesson_type = step.get("lessonType")
 
+        # Extract additional notes from character message
+        additional_notes = step.get("characterMessage", {}).get("additionalNotes", "")
+
         if lesson_type == "info":
             # Return info and indicate to advance
             return {
                 "type": "info",
                 "data": step,
-                "advance": True
+                "advance": True,
+                "Additional Notes": additional_notes
             }
         elif lesson_type in ["mcq", "multiple-choice", "text", "text-input"]:
             # Return question, wait for answer
             return {
                 "type": "question",
                 "data": step,
-                "advance": False
+                "advance": False,
+                "Additional Notes": additional_notes
             }
         else:
             # Unknown type, advance
             return {
                 "type": "unknown",
-                "advance": True
+                "advance": True,
+                "Additional Notes": additional_notes
             }
 
     async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
