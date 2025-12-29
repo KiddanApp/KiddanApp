@@ -101,12 +101,6 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3><i class="fas fa-book"></i> Lessons Management</h3>
                     <div>
-                        <button id="clearLessonsBtn" class="btn btn-danger me-2">
-                            <i class="fas fa-trash"></i> Clear All Lessons
-                        </button>
-                        <button id="syncFromStaticBtn" class="btn btn-warning me-2">
-                            <i class="fas fa-sync"></i> Sync from Static
-                        </button>
                         <button id="addLessonBtn" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Add New Lesson
                         </button>
@@ -223,8 +217,6 @@
         $(document).ready(function() {
             $('#verifyKey').click(verifyAdminKey);
             $('#seedDatabaseBtn').click(seedDatabase);
-            $('#clearLessonsBtn').click(clearAllLessons);
-            $('#syncFromStaticBtn').click(syncFromStatic);
             $('#addLessonBtn').click(showAddLessonForm);
             $('#cancelAddLesson').click(hideAddLessonForm);
             $('#lessonForm').submit(handleAddLesson);
@@ -766,57 +758,7 @@
             });
         }
 
-        // Clear all lessons
-        function clearAllLessons() {
-            if (!confirm('Are you sure you want to clear ALL lessons from the database? This action cannot be undone.')) return;
 
-            $('#clearLessonsBtn').prop('disabled', true).text('Clearing...');
-
-            fetch('/admin/lessons/clear-all', {
-                method: 'DELETE',
-                headers: {
-                    'X-Admin-Key': adminKey
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message || 'Lessons cleared successfully');
-                loadLessons(); // Reload lessons list
-            })
-            .catch(error => {
-                console.error('Error clearing lessons:', error);
-                alert('Error clearing lessons');
-            })
-            .finally(() => {
-                $('#clearLessonsBtn').prop('disabled', false).html('<i class="fas fa-trash"></i> Clear All Lessons');
-            });
-        }
-
-        // Sync lessons from static folder
-        function syncFromStatic() {
-            if (!confirm('This will load lessons from the static folder and replace any existing lessons for these characters. Continue?')) return;
-
-            $('#syncFromStaticBtn').prop('disabled', true).text('Syncing...');
-
-            fetch('/admin/lessons/sync-from-static', {
-                method: 'POST',
-                headers: {
-                    'X-Admin-Key': adminKey
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message || 'Sync completed successfully');
-                loadLessons(); // Reload lessons list
-            })
-            .catch(error => {
-                console.error('Error syncing lessons:', error);
-                alert('Error syncing lessons');
-            })
-            .finally(() => {
-                $('#syncFromStaticBtn').prop('disabled', false).html('<i class="fas fa-sync"></i> Sync from Static');
-            });
-        }
 
         // Handle lesson reordering
         function handleLessonReorder() {
