@@ -156,7 +156,7 @@ class SimplifiedLessonService:
 
         # Use the three-stage evaluation pipeline
         question_text = step.get("question", "")
-        evaluation_result = evaluation_pipeline.evaluate_answer(
+        evaluation_result = await evaluation_pipeline.evaluate_answer_async(
             user_answer=user_answer,
             correct_answers_list=correct_answers,
             question_text=question_text,

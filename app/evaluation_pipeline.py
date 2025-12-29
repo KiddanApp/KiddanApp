@@ -80,7 +80,7 @@ Be concise, max 2 sentences. No English."""
                 'ai_feedback': "Sahi jawab check karo ji."
             }
 
-    def evaluate_answer(
+    async def evaluate_answer_async(
         self,
         user_answer: str,
         correct_answers_list: List[str],
@@ -88,7 +88,7 @@ Be concise, max 2 sentences. No English."""
         character_id: str = None
     ) -> Dict:
         """
-        Main evaluation pipeline implementing the three-stage process.
+        Async version of evaluation pipeline implementing the three-stage process.
         Returns: {
             'correctness': float (0-100),
             'advance': bool,
@@ -131,14 +131,98 @@ Be concise, max 2 sentences. No English."""
         # STAGE 3: AI FALLBACK (IF NEEDED)
         feedback = ""
         if 30 <= correctness < 100:
-            # Run AI evaluation
-            import asyncio
-            ai_result = asyncio.run(self.ai_evaluate(question_text, user_answer, best_correct_answer, character_id))
+            # Run AI evaluation asynchronously
+            ai_result = await self.ai_evaluate(question_text, user_answer, best_correct_answer, character_id)
 
             # Blend scores (controlled adjustment)
             ai_correctness = ai_result['ai_correctness']
             correctness = min(100, max(0, round((correctness * 0.7) + (ai_correctness * 0.3))))
             feedback = ai_result['ai_feedback']
+
+        # STAGE 4: ADVANCE DECISION
+        advance = correctness >= 80
+
+        # STAGE 5: FEEDBACK CONTROL
+        if correctness < 30:
+            feedback = ""
+
+        return {
+            'correctness': correctness,
+            'advance': advance,
+            'feedback': feedback
+        }
+
+    def evaluate_answer(
+        self,
+        user_answer: str,
+        correct_answers_list: List[str],
+        question_text: str = "",
+        character_id: str = None
+    ) -> Dict:
+        """
+        Synchronous wrapper for backward compatibility.
+        """
+        import asyncio
+        try:
+            # Try to get the current event loop
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If we're in a running event loop, we need to handle this differently
+                # For now, skip AI evaluation in sync mode when in event loop
+                return self._evaluate_answer_sync(user_answer, correct_answers_list, question_text, character_id)
+            else:
+                # If no running loop, we can use asyncio.run
+                return loop.run_until_complete(self.evaluate_answer_async(user_answer, correct_answers_list, question_text, character_id))
+        except RuntimeError:
+            # No event loop, use asyncio.run
+            return asyncio.run(self.evaluate_answer_async(user_answer, correct_answers_list, question_text, character_id))
+
+    def _evaluate_answer_sync(
+        self,
+        user_answer: str,
+        correct_answers_list: List[str],
+        question_text: str = "",
+        character_id: str = None
+    ) -> Dict:
+        """
+        Synchronous evaluation without AI (for when we're in an async context).
+        """
+        # Handle empty answers
+        if not user_answer.strip():
+            return {
+                'correctness': 0,
+                'advance': False,
+                'feedback': ""
+            }
+
+        # Normalize inputs
+        normalized_user = self.normalize_text(user_answer)
+        normalized_corrects = [self.normalize_text(ans) for ans in correct_answers_list]
+
+        # STAGE 1: EXACT MATCH (FAST PASS)
+        for correct in normalized_corrects:
+            if normalized_user == correct:
+                return {
+                    'correctness': 100,
+                    'advance': True,
+                    'feedback': "Bilkul sahi jawab."
+                }
+
+        # STAGE 2: PARTIAL STRING MATCH SCORING
+        best_match_score = 0.0
+        best_correct_answer = correct_answers_list[0] if correct_answers_list else ""
+
+        for i, correct in enumerate(normalized_corrects):
+            score = self.string_similarity(normalized_user, correct)
+            if score > best_match_score:
+                best_match_score = score
+                best_correct_answer = correct_answers_list[i]
+
+        correctness = round(best_match_score * 100)
+
+        # STAGE 3: AI FALLBACK (SKIP IN SYNC MODE WHEN IN EVENT LOOP)
+        feedback = ""
+        # Skip AI evaluation in sync mode to avoid event loop issues
 
         # STAGE 4: ADVANCE DECISION
         advance = correctness >= 80
