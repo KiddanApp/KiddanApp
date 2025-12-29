@@ -3,6 +3,7 @@ from typing import Optional, Dict, List, Any
 import re
 import asyncio
 import difflib
+from evaluation_pipeline import evaluation_pipeline
 
 class SimplifiedLessonService:
     def normalize_text(self, text: str) -> str:
@@ -115,7 +116,7 @@ class SimplifiedLessonService:
             }
 
     async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
-        """Validate user answer with AI-prioritized contextual evaluation - ENHANCED"""
+        """Validate user answer using the three-stage evaluation pipeline"""
         lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "advance": False, "feedback": "Lesson not found", "emotion": "normal"}
@@ -130,102 +131,49 @@ class SimplifiedLessonService:
 
         # Handle empty answers
         if not user_answer.strip():
-            return {"valid": False, "advance": True, "feedback": "Jawab deo ji.", "retry": False, "emotion": "normal"}
+            return {"valid": False, "advance": False, "feedback": "", "retry": False, "emotion": "normal"}
 
-        # For MCQ questions - use contextual AI evaluation
-        if lesson_type in ["mcq", "multiple-choice"]:
-            # First try exact matching for efficiency
-            normalized_answer = self.normalize_text(user_answer)
-            for correct in correct_answers:
-                if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
-                    return {"valid": True, "advance": True, "feedback": "Bahut accha! Sahi jawab.", "retry": False, "emotion": "happy"}
-
-            # Use AI for contextual evaluation of MCQ answers
-            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-            emotion = self._determine_feedback_emotion(ai_feedback)
-            is_correct = emotion == "happy"
-            return {
-                "valid": is_correct,
-                "advance": True,  # Always allow progression for MCQ
-                "feedback": ai_feedback,
-                "retry": False,
-                "emotion": emotion
-            }
-
-        # For text inputs without predefined correct answers
+        # For text inputs without predefined correct answers, use AI feedback
         if lesson_type in ["text", "text-input"] and not correct_answers:
+            # Extract expected answer from character message if possible
             character_message = step.get("characterMessage", {}).get("romanPunjabi", "")
             match = re.search(r'"([^"]+)"', character_message)
             if match:
                 expected = match.group(1)
-                if expected and self.normalize_text(user_answer) == self.normalize_text(expected):
-                    return {"valid": True, "advance": True, "feedback": "Perfect!", "retry": False, "emotion": "happy"}
+                correct_answers = [expected]
 
-            # Use AI evaluation for open-ended text responses
-            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-            emotion = self._determine_feedback_emotion(ai_feedback)
-            return {
-                "valid": emotion == "happy",  # AI determines correctness
-                "advance": True,
-                "feedback": ai_feedback,
-                "retry": False,
-                "emotion": emotion
-            }
-
-        # No correct answers defined - accept and provide AI feedback
+        # If still no correct answers, use AI evaluation
         if not correct_answers:
             ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
             emotion = self._determine_feedback_emotion(ai_feedback)
             return {
-                "valid": True,
+                "valid": True,  # Accept open-ended responses
                 "advance": True,
                 "feedback": ai_feedback,
                 "retry": False,
                 "emotion": emotion
             }
 
-        # PRIORITIZE AI EVALUATION for answers with correct_answers defined
-        # Generate AI feedback first to understand context
-        ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
-        ai_emotion = self._determine_feedback_emotion(ai_feedback)
+        # Use the three-stage evaluation pipeline
+        question_text = step.get("question", "")
+        evaluation_result = evaluation_pipeline.evaluate_answer(
+            user_answer=user_answer,
+            correct_answers_list=correct_answers,
+            question_text=question_text,
+            character_id=character_id
+        )
 
-        # If AI says it's correct, accept it regardless of text matching
-        if ai_emotion == "happy":
-            return {"valid": True, "advance": True, "feedback": ai_feedback, "retry": False, "emotion": ai_emotion}
+        # Map pipeline results to service response format
+        emotion = "happy" if evaluation_result["correctness"] >= 80 else "normal"
+        if evaluation_result["correctness"] < 30:
+            emotion = "sad"
 
-        # AI says it's not correct - check for exact matches as fallback
-        normalized_answer = self.normalize_text(user_answer)
-        for correct in correct_answers:
-            if isinstance(correct, str) and self.normalize_text(correct) == normalized_answer:
-                return {"valid": True, "advance": True, "feedback": "Correct!", "retry": False, "emotion": "happy"}
-
-        # Check similarity for close matches
-        best_similarity = 0.0
-        best_correct = ""
-        for correct in correct_answers:
-            if isinstance(correct, str):
-                sim = self.calculate_similarity(normalized_answer, self.normalize_text(correct))
-                if sim > best_similarity:
-                    best_similarity = sim
-                    best_correct = correct
-
-        # For high similarity, provide gentle correction
-        if best_similarity > 0.7:  # Lowered threshold for more acceptance
-            return {
-                "valid": True,  # Accept close matches to encourage learning
-                "advance": True,
-                "feedback": ai_feedback,  # Use AI feedback for gentle correction
-                "retry": False,
-                "emotion": ai_emotion
-            }
-
-        # Use AI feedback for low similarity cases
         return {
-            "valid": False,  # Allow progression but mark as needing improvement
-            "advance": True,  # Always allow progression for learning
-            "feedback": ai_feedback,
-            "retry": False,
-            "emotion": ai_emotion
+            "valid": evaluation_result["correctness"] >= 60,  # Valid if not incorrect
+            "advance": evaluation_result["advance"],
+            "feedback": evaluation_result["feedback"],
+            "retry": False,  # Never force retry - allow progression
+            "emotion": emotion
         }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
