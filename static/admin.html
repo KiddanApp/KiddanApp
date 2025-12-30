@@ -587,8 +587,8 @@
                         </div>
                         
                         <div class="mb-2">
-                            <label class="form-label">Correct Answers (comma-separated)</label>
-                            <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
+                            <label class="form-label">Correct Answers (one per line)</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="correctAnswers">${(step.correctAnswers || []).join('\n')}</textarea>
                         </div>
 
                         <div class="mb-2">
@@ -618,8 +618,8 @@
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label">Correct Answers (comma-separated)</label>
-                            <input type="text" class="form-control form-control-sm" value="${(step.correctAnswers || []).join(', ')}" data-field="correctAnswers">
+                            <label class="form-label">Correct Answers (one per line)</label>
+                            <textarea class="form-control form-control-sm" rows="2" data-field="correctAnswers">${(step.correctAnswers || []).join('\n')}</textarea>
                         </div>
 
                         <div class="mb-2">
@@ -706,7 +706,7 @@
                     case 'mcq':
                         step.question = stepCard.find('[data-field="question"]').val();
                         step.options = stepCard.find('[data-field="options"]').val().split('\n').filter(opt => opt.trim());
-                        step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
+                        step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split('\n').map(ans => ans.trim()).filter(ans => ans);
                         // Also collect character message for MCQ steps
                         step.characterMessage = {
                             romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
@@ -714,11 +714,11 @@
                             romanEnglish: stepCard.find('[data-field="romanEnglish"]').val(),
                             additionalNotes: stepCard.find('[data-field="additionalNotes"]').val()
                         };
-                        
+
                         break;
                     case 'text':
                         step.question = stepCard.find('[data-field="question"]').val();
-                        step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split(',').map(ans => ans.trim()).filter(ans => ans);
+                        step.correctAnswers = stepCard.find('[data-field="correctAnswers"]').val().split('\n').map(ans => ans.trim()).filter(ans => ans);
                         // Also collect character message for text steps
                         step.characterMessage = {
                             romanPunjabi: stepCard.find('[data-field="romanPunjabi"]').val(),
