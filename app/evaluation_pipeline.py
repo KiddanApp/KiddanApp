@@ -132,7 +132,7 @@ Be concise, max 2 sentences. No English."""
 
         # STAGE 3: AI FALLBACK (IF NEEDED)
         feedback = ""
-        if 40 <= correctness < 100:
+        if  0 <= correctness < 100:
             # Run AI evaluation asynchronously
             ai_result = await self.ai_evaluate(question_text, user_answer, best_correct_answer, character_id)
 
