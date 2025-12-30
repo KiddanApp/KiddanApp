@@ -6,7 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 import os
 from contextlib import asynccontextmanager
 
-from app.routers import characters, chat, lessons, admin, auth
+from app.routers import characters, chat, lessons, admin, auth, translations
 from app.db import get_database
 from app.database import engine, Base
 from app.services.character_service import CharacterService
@@ -100,6 +100,7 @@ app.include_router(characters.router, prefix="/characters", tags=["characters"])
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
 app.include_router(lessons.router, prefix="/lessons", tags=["lessons"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(translations.router, prefix="/translate", tags=["translations"])
 app.include_router(admin.router, tags=["admin"])
 
 @app.get("/admin")

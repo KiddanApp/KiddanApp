@@ -75,5 +75,39 @@ Gurmukhi Punjabi:"""
             print(f"Gurmukhi translation error: {e}")
             return text  # Return original text on error
 
+    async def translate_roman_to_english(self, roman_punjabi_text: str) -> str:
+        """Translate Romanized Punjabi to English using Gemini"""
+        try:
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel("gemini-2.0-flash")
+
+            prompt = f"""Translate this Romanized Punjabi text to natural English.
+Keep the meaning and tone exactly the same. Provide a clear, natural English translation.
+
+Romanized Punjabi: {roman_punjabi_text}
+
+English translation:"""
+
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=100,
+                    temperature=0.1  # Low temperature for consistent translations
+                )
+            )
+
+            english_text = response.text.strip()
+            # Clean up any extra formatting
+            if english_text.startswith("English translation:"):
+                english_text = english_text.replace("English translation:", "").strip()
+            if english_text.startswith("English:"):
+                english_text = english_text.replace("English:", "").strip()
+
+            return english_text
+
+        except Exception as e:
+            print(f"Roman to English translation error: {e}")
+            return roman_punjabi_text  # Return original text on error
+
 # Global translation service instance
 translation_service = TranslationService()
