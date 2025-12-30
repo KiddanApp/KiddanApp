@@ -132,7 +132,7 @@ Be concise, max 2 sentences. No English."""
 
         # STAGE 3: AI FALLBACK (IF NEEDED)
         feedback = ""
-        if 30 <= correctness < 100:
+        if 40 <= correctness < 100:
             # Run AI evaluation asynchronously
             ai_result = await self.ai_evaluate(question_text, user_answer, best_correct_answer, character_id)
 
@@ -260,22 +260,3 @@ async def evaluate_answer_async(
 if __name__ == "__main__":
     # Test the pipeline
     pipeline = EvaluationPipeline()
-
-    test_cases = [
-        # Exact match
-        ("Sat Sri Akal", ["Sat Sri Akal"], "Greeting question", 100, True, "Bilkul sahi jawab."),
-        # Partial match - missing word
-        ("Sat Akal", ["Sat Sri Akal"], "Greeting question", 85, True, ""),  # AI would provide feedback
-        # Word order issue
-        ("Sri Sat Akal", ["Sat Sri Akal"], "Greeting question", 70, False, ""),  # AI would provide feedback
-        # Completely wrong
-        ("Hello", ["Sat Sri Akal"], "Greeting question", 10, False, ""),
-    ]
-
-    print("Testing Three-Stage Evaluation Pipeline:")
-    for user_ans, corrects, question, expected_corr, expected_adv, expected_fb in test_cases:
-        result = pipeline.evaluate_answer(user_ans, corrects, question)
-        print(f"\nUser: '{user_ans}' | Expected: {corrects[0]}")
-        print(f"Correctness: {result['correctness']}% (expected ~{expected_corr})")
-        print(f"Advance: {result['advance']} (expected {expected_adv})")
-        print(f"Feedback: '{result['feedback']}'")
