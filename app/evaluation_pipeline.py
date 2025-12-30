@@ -143,8 +143,8 @@ Be concise, max 2 sentences. No English."""
         advance = correctness >= 80
 
         # STAGE 5: FEEDBACK CONTROL
-        if correctness < 30:
-            feedback = "please try again."
+        # if correctness < 30:
+        #     feedback = "please try again."
 
         return {
             'correctness': correctness,
@@ -225,7 +225,7 @@ Be concise, max 2 sentences. No English."""
         # Skip AI evaluation in sync mode to avoid event loop issues
 
         # STAGE 4: ADVANCE DECISION
-        advance = correctness >= 99
+        advance = correctness >= 80
 
         # STAGE 5: FEEDBACK CONTROL
 
