@@ -102,7 +102,7 @@ Be concise, max 2 sentences. No English."""
             return {
                 'correctness': 0,
                 'advance': False,
-                'feedback': ""
+                'feedback': "please provide an answer."
             }
 
         # Normalize inputs
@@ -146,7 +146,7 @@ Be concise, max 2 sentences. No English."""
 
         # STAGE 5: FEEDBACK CONTROL
         if correctness < 30:
-            feedback = ""
+            feedback = "please try again."
 
         return {
             'correctness': correctness,
