@@ -2,12 +2,10 @@
 Three-Stage Evaluation Pipeline for KiddanApp Language Learning
 Implements the exact evaluation logic specified in requirements.
 """
-
 import re
 import difflib
 from typing import Dict, List, Optional
 
-# Optional imports for AI functionality
 try:
     from app.services.ai_service import call_gemini, load_character
     AI_AVAILABLE = True
@@ -227,11 +225,9 @@ Be concise, max 2 sentences. No English."""
         # Skip AI evaluation in sync mode to avoid event loop issues
 
         # STAGE 4: ADVANCE DECISION
-        advance = correctness >= 80
+        advance = correctness >= 99
 
         # STAGE 5: FEEDBACK CONTROL
-        if correctness < 30:
-            feedback = "please try again."
 
         return {
             'correctness': correctness,
