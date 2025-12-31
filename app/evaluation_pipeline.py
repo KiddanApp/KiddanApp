@@ -180,8 +180,8 @@ Your response:"""
             correctness = min(100, max(0, round((correctness * 0.7) + (ai_correctness * 0.3))))
             feedback = ai_result['ai_feedback']
 
-        # STAGE 4: ADVANCE DECISION
-        advance = correctness >= 80
+        # STAGE 4: ADVANCE DECISION (More lenient for language learning)
+        advance = correctness >= 50
 
         # STAGE 5: FEEDBACK CONTROL
         # if correctness < 30:
@@ -265,8 +265,8 @@ Your response:"""
         feedback = ""
         # Skip AI evaluation in sync mode to avoid event loop issues
 
-        # STAGE 4: ADVANCE DECISION
-        advance = correctness >= 80
+        # STAGE 4: ADVANCE DECISION (More lenient for language learning)
+        advance = correctness >= 50
 
         # STAGE 5: FEEDBACK CONTROL
 

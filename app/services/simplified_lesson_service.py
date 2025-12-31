@@ -196,7 +196,7 @@ class SimplifiedLessonService:
             emotion = "sad"
 
         return {
-            "valid": evaluation_result["correctness"] >= 60,  # Valid if not incorrect
+            "valid": evaluation_result["correctness"] >= 40,  # More lenient validation for language learning
             "advance": evaluation_result["advance"],
             "feedback": evaluation_result["feedback"],
             "retry": False,  # Never force retry - allow progression
