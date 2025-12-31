@@ -171,7 +171,8 @@ class SimplifiedLessonService:
                 "advance": True,
                 "feedback": ai_feedback,
                 "retry": False,
-                "emotion": emotion
+                "emotion": emotion,
+                "ai_feedback": True  # Always AI feedback for open-ended questions
             }
 
         # Use the three-stage evaluation pipeline with conversation context
@@ -203,7 +204,8 @@ class SimplifiedLessonService:
             "advance": evaluation_result["advance"],
             "feedback": evaluation_result["feedback"],
             "retry": False,  # Never force retry - allow progression
-            "emotion": emotion
+            "emotion": emotion,
+            "ai_feedback": evaluation_result.get("ai_used", False)
         }
 
     async def get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:

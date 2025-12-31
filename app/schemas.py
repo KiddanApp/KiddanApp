@@ -23,6 +23,7 @@ class AnswerResponse(BaseModel):
     feedback: str
     retry: bool = False
     emotion: str = "normal"  # Emotion determined from the feedback content
+    ai_feedback: bool = False  # True if AI was used to generate feedback
 
 class ChatReply(BaseModel):
     character_id: str

@@ -30,6 +30,7 @@ class EvaluationResult:
     advance: bool
     feedback: str
     confidence: Optional[float] = None
+    ai_used: bool = False
 
 
 @dataclass
@@ -268,7 +269,8 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
                 state=EvaluationState.PERFECT,
                 advance=True,
                 feedback=feedback,
-                confidence=heuristic
+                confidence=heuristic,
+                ai_used=False
             )
 
         # FAST FAIL (CLEARLY WRONG)
@@ -279,7 +281,8 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
                 state=EvaluationState.WRONG,
                 advance=False,
                 feedback=feedback,
-                confidence=heuristic
+                confidence=heuristic,
+                ai_used=False
             )
 
         # AI DECIDES (AMBIGUOUS ZONE)
@@ -304,7 +307,8 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
             state=state,
             advance=advance,
             feedback=feedback,
-            confidence=heuristic
+            confidence=heuristic,
+            ai_used=True
         )
 
     # BACKWARD COMPATIBILITY METHODS
@@ -345,7 +349,8 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
         return {
             'correctness': correctness,
             'advance': result.advance,
-            'feedback': result.feedback
+            'feedback': result.feedback,
+            'ai_used': result.ai_used
         }
 
     def evaluate_answer_sync(
