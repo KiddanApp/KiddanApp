@@ -233,7 +233,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
         # Default fallback
         return f"{char_name}: Sahi jawab check karo ji."
 
-    async def evaluate_answer(
+    async def _evaluate_answer_async(
         self,
         user_answer: str,
         correct_answers_list: List[str],
@@ -321,7 +321,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
         if lesson_type is None:
             lesson_type = "text"  # Most common
 
-        result = await self.evaluate_answer(
+        result = await self._evaluate_answer_async(
             user_answer=user_answer,
             correct_answers_list=correct_answers_list,
             question_text=question_text,
@@ -344,7 +344,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
             'feedback': result.feedback
         }
 
-    def evaluate_answer(
+    def evaluate_answer_sync(
         self,
         user_answer: str,
         correct_answers_list: List[str],
@@ -430,6 +430,19 @@ async def evaluate_answer_async(
     """Async wrapper for evaluation pipeline."""
     return await evaluation_pipeline.evaluate_answer_async(
         user_answer, correct_answers_list, question_text, character_id, lesson_type=lesson_type
+    )
+
+
+# For backward compatibility - add back the old evaluate_answer method
+def evaluate_answer(
+    user_answer: str,
+    correct_answers_list: List[str],
+    question_text: str = "",
+    character_id: str = None
+) -> Dict:
+    """Synchronous wrapper for backward compatibility."""
+    return evaluation_pipeline.evaluate_answer_sync(
+        user_answer, correct_answers_list, question_text, character_id
     )
 
 
