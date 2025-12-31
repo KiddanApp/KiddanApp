@@ -159,10 +159,11 @@ class SimplifiedLessonService:
             emotion = self._determine_feedback_emotion(ai_feedback)
 
             # Store this interaction in conversation history
+            import time
             self.conversation_history[conversation_key].append({
                 "user_answer": user_answer,
                 "ai_feedback": ai_feedback,
-                "timestamp": asyncio.get_event_loop().time()
+                "timestamp": time.time()
             })
 
             return {
@@ -185,10 +186,11 @@ class SimplifiedLessonService:
         )
 
         # Store this interaction in conversation history
+        import time
         self.conversation_history[conversation_key].append({
             "user_answer": user_answer,
             "ai_feedback": evaluation_result.get("feedback", ""),
-            "timestamp": asyncio.get_event_loop().time()
+            "timestamp": time.time()
         })
 
         # Map pipeline results to service response format
