@@ -127,7 +127,7 @@ class EvaluationPipeline:
                 char_name = "Teacher"
                 if context.get('character'):
                     char_name = context['character'].get('name', 'Teacher')
-                return EvaluationState.ACCEPTABLE, f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
+                return EvaluationState.ACCEPTABLE, f"Sahi jawab check kar ke dubara try karo ji."
 
             character = context.get('character')
             if not character:
@@ -200,7 +200,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
             if context.get('character'):
                 char_name = context['character'].get('name', 'Teacher')
 
-            return EvaluationState.ACCEPTABLE, f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
+            return EvaluationState.ACCEPTABLE, f"Sahi jawab check kar ke dubara try karo ji."
 
     def polish_feedback(self, state: EvaluationState, advance: bool, ai_feedback: str, character: Dict) -> str:
         """Polish feedback based on state and advancement decision."""
@@ -211,27 +211,27 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
 
         if advance and state == EvaluationState.ACCEPTABLE:
             if ai_feedback:
-                return f"Vadia! {ai_feedback} Agge vadh, bas eh gall yaad rakh..."
+                return f"Vadia! {ai_feedback}"
             else:
-                return f"{char_name}: Shabaash! Sahi jawab. Agge vadh."
+                return f"Shabaash! Sahi jawab. Agge vadh."
 
         if advance and state == EvaluationState.PERFECT:
-            return f"{char_name}: Bilkul sahi! Shabaash!"
+            return f"Bilkul sahi! Shabaash!"
 
         if not advance and state == EvaluationState.PARTIAL:
             if ai_feedback:
-                return f"{char_name}: {ai_feedback} Thoda aur try kar."
+                return f"{ai_feedback}"
             else:
-                return f"{char_name}: Thoda aur sahi banake dubara try karo ji."
+                return f"Thoda aur sahi banake dubara try karo ji."
 
         if not advance:
             if ai_feedback:
-                return f"{char_name}: {ai_feedback}"
+                return f"{ai_feedback}"
             else:
-                return f"{char_name}: Dubara try karo ji."
+                return f"Dubara try karo ji."
 
         # Default fallback
-        return f"{char_name}: Sahi jawab check karo ji."
+        return f"Sahi jawab check karo ji."
 
     async def _evaluate_answer_async(
         self,
