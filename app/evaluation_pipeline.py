@@ -77,26 +77,26 @@ class EvaluationPipeline:
         if lesson_type == "mcq":
             return Thresholds(
                 auto_pass=0.95,
-                ai_zone_low=0.50,
+                ai_zone_low=0.10,
                 accept_states=[EvaluationState.PERFECT]
             )
         elif lesson_type == "text":
             return Thresholds(
                 auto_pass=0.90,
-                ai_zone_low=0.40,
+                ai_zone_low=0.10,
                 accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
             )
         elif lesson_type == "translation":
             return Thresholds(
                 auto_pass=0.88,
-                ai_zone_low=0.35,
+                ai_zone_low=0.10,
                 accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
             )
         else:
             # Conservative defaults
             return Thresholds(
                 auto_pass=0.85,
-                ai_zone_low=0.45,
+                ai_zone_low=0.10,
                 accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
             )
 
