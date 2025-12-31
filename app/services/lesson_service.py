@@ -78,7 +78,11 @@ class LessonService:
             if lesson.id == lesson_id:
                 # Update lesson fields
                 for key, value in lesson_data.items():
-                    if hasattr(lesson, key):
+                    if key == 'steps':
+                        # Handle steps specially - convert dicts to LessonStep objects
+                        from app.models import LessonStep
+                        lesson.steps = [LessonStep(**step_dict) for step_dict in value]
+                    elif hasattr(lesson, key):
                         setattr(lesson, key, value)
                 break
         else:
