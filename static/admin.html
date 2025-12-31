@@ -311,6 +311,9 @@
 
         // Handle character selection change
         function handleCharacterChange() {
+            // Close any open modals when switching characters
+            $('#editLessonModal').modal('hide');
+
             currentCharacterId = $(this).val();
             if (currentCharacterId) {
                 $('#lessonsSection').removeClass('d-none');
@@ -676,6 +679,14 @@
 
             if (!title) {
                 alert('Please enter lesson title');
+                return;
+            }
+
+            // Check if the lesson still exists in current character's lessons
+            const currentLesson = lessons.find(l => l.id === lessonId);
+            if (!currentLesson) {
+                alert('This lesson no longer exists for the current character. Please refresh the page.');
+                $('#editLessonModal').modal('hide');
                 return;
             }
 

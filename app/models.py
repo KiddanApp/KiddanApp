@@ -18,7 +18,7 @@ class CharacterMessage(BaseModel):
     romanPunjabi: Optional[str] = None
     gurmukhi: Optional[str] = None
     romanEnglish: Optional[str] = None
-    additionalNotes: Optional[str] = None
+    additionalNotes: str = ""
 
 class LessonStep(BaseModel):
     lessonType: str
