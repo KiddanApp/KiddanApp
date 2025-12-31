@@ -4,7 +4,9 @@ Implements the exact evaluation logic specified in requirements.
 """
 import re
 import difflib
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from enum import Enum
 
 try:
     from app.services.ai_service import call_gemini, load_character
@@ -13,6 +15,28 @@ except ImportError:
     AI_AVAILABLE = False
     call_gemini = None
     load_character = None
+
+
+class EvaluationState(Enum):
+    PERFECT = "perfect"
+    ACCEPTABLE = "acceptable"
+    PARTIAL = "partial"
+    WRONG = "wrong"
+
+
+@dataclass
+class EvaluationResult:
+    state: EvaluationState
+    advance: bool
+    feedback: str
+    confidence: Optional[float] = None
+
+
+@dataclass
+class Thresholds:
+    auto_pass: float
+    ai_zone_low: float
+    accept_states: List[EvaluationState]
 
 
 class EvaluationPipeline:
@@ -33,18 +57,71 @@ class EvaluationPipeline:
         clean = clean.lower()
         return clean.strip()
 
-    def string_similarity(self, str1: str, str2: str) -> float:
-        """Calculate similarity ratio between two strings."""
+    def sequence_similarity(self, str1: str, str2: str) -> float:
+        """Calculate sequence similarity between two strings."""
         return difflib.SequenceMatcher(None, str1, str2).ratio()
 
-    async def ai_evaluate(self, question_text: str, user_answer: str, correct_answer: str, character_id: str = None, conversation_history: List[Dict] = None) -> Dict:
+    def token_overlap(self, str1: str, str2: str) -> float:
+        """Calculate token overlap similarity."""
+        tokens1 = set(str1.split())
+        tokens2 = set(str2.split())
+        if not tokens1 or not tokens2:
+            return 0.0
+        intersection = tokens1.intersection(tokens2)
+        union = tokens1.union(tokens2)
+        return len(intersection) / len(union)
+
+    def get_thresholds(self, lesson_type: str) -> Thresholds:
+        """Get thresholds based on lesson type."""
+        if lesson_type == "mcq":
+            return Thresholds(
+                auto_pass=0.95,
+                ai_zone_low=0.50,
+                accept_states=[EvaluationState.PERFECT]
+            )
+        elif lesson_type == "text":
+            return Thresholds(
+                auto_pass=0.90,
+                ai_zone_low=0.40,
+                accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
+            )
+        elif lesson_type == "translation":
+            return Thresholds(
+                auto_pass=0.88,
+                ai_zone_low=0.35,
+                accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
+            )
+        else:
+            # Conservative defaults
+            return Thresholds(
+                auto_pass=0.85,
+                ai_zone_low=0.45,
+                accept_states=[EvaluationState.PERFECT, EvaluationState.ACCEPTABLE]
+            )
+
+    def heuristic_score(self, user_answer: str, correct_answers: List[str]) -> float:
+        """Calculate heuristic similarity score."""
+        normalized_user = self.normalize_text(user_answer)
+        best_score = 0.0
+
+        for correct in correct_answers:
+            normalized_correct = self.normalize_text(correct)
+
+            seq_score = self.sequence_similarity(normalized_user, normalized_correct)
+            token_score = self.token_overlap(normalized_user, normalized_correct)
+
+            combined = (0.6 * seq_score) + (0.4 * token_score)
+            best_score = max(best_score, combined)
+
+        return best_score
+
+    async def ai_evaluate(self, context: Dict) -> Tuple[EvaluationState, str]:
         """
-        AI evaluation for ambiguous cases with character personality and conversation context.
-        Returns: {'ai_correctness': float, 'ai_feedback': str}
+        AI evaluation using Gemini with explicit rubric.
+        Returns: (state, feedback)
         """
         try:
-            # Load character for contextual feedback
-            character = await self.ai_load_character(character_id) if character_id else None
+            character = context.get('character')
             if not character:
                 character = {
                     'name': 'Teacher',
@@ -53,10 +130,10 @@ class EvaluationPipeline:
                     'speaking_style': 'friendly and encouraging'
                 }
 
-            # Build conversation context (last 3 exchanges)
+            # Build conversation context
             conversation_context = ""
-            if conversation_history and len(conversation_history) > 0:
-                recent_exchanges = conversation_history[-3:]  # Last 3 exchanges
+            if context.get('chat_history'):
+                recent_exchanges = context['chat_history'][-3:]
                 conversation_lines = []
                 for exchange in recent_exchanges:
                     user_msg = exchange.get('user_answer', exchange.get('user_message', ''))
@@ -69,56 +146,156 @@ class EvaluationPipeline:
 
             prompt = f"""You are {character.get('name', 'Teacher')}, a {character.get('role', 'teacher')} with {character.get('personality', 'helpful')} personality.
 
-QUESTION: "{question_text}"
-STUDENT ANSWER: "{user_answer}"
-CORRECT ANSWER: "{correct_answer}"
+QUESTION: "{context.get('question_text', '')}"
+STUDENT ANSWER: "{context.get('user_answer', '')}"
+CORRECT ANSWER(S): {', '.join(context.get('correct_answers', []))}
 {conversation_context}
 
 EVALUATION TASK:
-Compare the student's answer with the correct answer. Consider spelling variations, similar meanings, and cultural context in Punjabi learning.
+Classify the answer as ONE of these categories:
+- PERFECT: Answer is completely correct, matches meaning exactly
+- ACCEPTABLE: Answer has minor issues but meaning is correct
+- PARTIAL: Answer has some correct meaning but is incomplete or has errors
+- WRONG: Answer is incorrect or irrelevant
 
-RESPONSE GUIDELINES:
-- Respond as {character.get('name', 'Teacher')} in a {character.get('speaking_style', 'friendly and encouraging')} way
-- Use Roman Punjabi only (no English)
-- Keep it conversational, like talking to a family member
-- If mostly correct: Encourage and gently suggest improvements
-- If wrong: Guide helpfully without being harsh, maintain the learning spirit
-- Reference previous conversation if relevant
-- Be concise but warm (max 3 sentences)
-- Show {character.get('personality', 'helpful')} personality traits
+Then give SHORT feedback in Roman Punjabi, matching {character.get('name', 'Teacher')}'s personality.
 
-Your response:"""
+RESPONSE FORMAT:
+First line: One word classification (PERFECT/ACCEPTABLE/PARTIAL/WRONG)
+Then: Feedback in Roman Punjabi (max 2 sentences)"""
 
             ai_response = await self.ai_call_gemini(prompt, max_tokens=100)
 
-            # Estimate correctness based on AI response content
-            response_lower = ai_response.lower()
-            if any(word in response_lower for word in ['sahi', 'accha', 'bahut', 'shabaash', 'correct']):
-                ai_correctness = 75.0  # Positive feedback suggests higher correctness
-            elif any(word in response_lower for word in ['try', 'kar', 'galat', 'wrong', 'check']):
-                ai_correctness = 45.0  # Suggestive feedback suggests moderate correctness
+            # Parse response
+            lines = ai_response.strip().split('\n', 1)
+            if len(lines) >= 2:
+                classification = lines[0].strip().upper()
+                feedback = lines[1].strip()
             else:
-                ai_correctness = 60.0  # Default for AI intervention
+                classification = "ACCEPTABLE"
+                feedback = ai_response.strip()
 
-            return {
-                'ai_correctness': ai_correctness,
-                'ai_feedback': ai_response.strip()
+            # Map to enum
+            state_map = {
+                "PERFECT": EvaluationState.PERFECT,
+                "ACCEPTABLE": EvaluationState.ACCEPTABLE,
+                "PARTIAL": EvaluationState.PARTIAL,
+                "WRONG": EvaluationState.WRONG
             }
+            state = state_map.get(classification, EvaluationState.ACCEPTABLE)
+
+            return state, feedback
 
         except Exception as e:
-            # Character-specific fallback
+            # Fallback
             char_name = "Teacher"
-            if character_id and self.ai_load_character:
-                try:
-                    char = await self.ai_load_character(character_id)
-                    char_name = char.get('name', 'Teacher') if char else 'Teacher'
-                except:
-                    pass
+            if context.get('character'):
+                char_name = context['character'].get('name', 'Teacher')
 
-            return {
-                'ai_correctness': 50.0,
-                'ai_feedback': f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
-            }
+            return EvaluationState.ACCEPTABLE, f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
+
+    def polish_feedback(self, state: EvaluationState, advance: bool, ai_feedback: str, character: Dict) -> str:
+        """Polish feedback based on state and advancement decision."""
+        if not character:
+            character = {'name': 'Teacher'}
+
+        char_name = character.get('name', 'Teacher')
+
+        if advance and state == EvaluationState.ACCEPTABLE:
+            if ai_feedback:
+                return f"Vadia! {ai_feedback} Agge vadh, bas eh gall yaad rakh..."
+            else:
+                return f"{char_name}: Shabaash! Sahi jawab. Agge vadh."
+
+        if advance and state == EvaluationState.PERFECT:
+            return f"{char_name}: Bilkul sahi! Shabaash!"
+
+        if not advance and state == EvaluationState.PARTIAL:
+            if ai_feedback:
+                return f"{char_name}: {ai_feedback} Thoda aur try kar."
+            else:
+                return f"{char_name}: Thoda aur sahi banake dubara try karo ji."
+
+        if not advance:
+            if ai_feedback:
+                return f"{char_name}: {ai_feedback}"
+            else:
+                return f"{char_name}: Dubara try karo ji."
+
+        # Default fallback
+        return f"{char_name}: Sahi jawab check karo ji."
+
+    async def evaluate_answer(
+        self,
+        user_answer: str,
+        correct_answers_list: List[str],
+        question_text: str,
+        lesson_type: str,
+        character_id: str = None,
+        chat_history: List[Dict] = None
+    ) -> EvaluationResult:
+        """
+        Main evaluation pipeline implementing the three-stage process.
+        """
+        # Handle empty answers
+        if not user_answer.strip():
+            return EvaluationResult(
+                state=EvaluationState.WRONG,
+                advance=False,
+                feedback="Jawab likho ji."
+            )
+
+        thresholds = self.get_thresholds(lesson_type)
+        heuristic = self.heuristic_score(user_answer, correct_answers_list)
+
+        # FAST PASS (CLEARLY CORRECT)
+        if heuristic >= thresholds.auto_pass:
+            character = await self.ai_load_character(character_id) if character_id and self.ai_load_character else None
+            feedback = self.polish_feedback(EvaluationState.PERFECT, True, "", character)
+            return EvaluationResult(
+                state=EvaluationState.PERFECT,
+                advance=True,
+                feedback=feedback,
+                confidence=heuristic
+            )
+
+        # FAST FAIL (CLEARLY WRONG)
+        if heuristic < thresholds.ai_zone_low:
+            character = await self.ai_load_character(character_id) if character_id and self.ai_load_character else None
+            feedback = self.polish_feedback(EvaluationState.WRONG, False, "", character)
+            return EvaluationResult(
+                state=EvaluationState.WRONG,
+                advance=False,
+                feedback=feedback,
+                confidence=heuristic
+            )
+
+        # AI DECIDES (AMBIGUOUS ZONE)
+        character = await self.ai_load_character(character_id) if character_id and self.ai_load_character else None
+        context = {
+            'user_answer': user_answer,
+            'correct_answers': correct_answers_list,
+            'question_text': question_text,
+            'chat_history': chat_history or [],
+            'character': character
+        }
+
+        state, ai_feedback = await self.ai_evaluate(context)
+
+        # PROGRESSION DECISION
+        advance = state in thresholds.accept_states
+
+        # FEEDBACK RECONCILIATION
+        feedback = self.polish_feedback(state, advance, ai_feedback, character)
+
+        return EvaluationResult(
+            state=state,
+            advance=advance,
+            feedback=feedback,
+            confidence=heuristic
+        )
+
+    # BACKWARD COMPATIBILITY METHODS
 
     async def evaluate_answer_async(
         self,
@@ -129,68 +306,32 @@ Your response:"""
         conversation_history: List[Dict] = None
     ) -> Dict:
         """
-        Async version of evaluation pipeline implementing the three-stage process.
-        Returns: {
-            'correctness': float (0-100),
-            'advance': bool,
-            'feedback': str
-        }
+        Async wrapper for backward compatibility.
         """
-        # Handle empty answers
-        if not user_answer.strip():
-            return {
-                'correctness': 0,
-                'advance': False,
-                'feedback': "please provide an answer."
-            }
+        # Default lesson_type - could be made configurable later
+        lesson_type = "text"  # Most common
 
-        # Normalize inputs
-        normalized_user = self.normalize_text(user_answer)
-        normalized_corrects = [self.normalize_text(ans) for ans in correct_answers_list]
+        result = await self.evaluate_answer(
+            user_answer=user_answer,
+            correct_answers_list=correct_answers_list,
+            question_text=question_text,
+            lesson_type=lesson_type,
+            character_id=character_id,
+            chat_history=conversation_history
+        )
 
-        # STAGE 1: EXACT MATCH (FAST PASS)
-        for correct in normalized_corrects:
-            if normalized_user == correct:
-                return {
-                    'correctness': 100,
-                    'advance': True,
-                    'feedback': "Bilkul sahi jawab."
-                }
-
-        # STAGE 2: PARTIAL STRING MATCH SCORING
-        best_match_score = 0.0
-        best_correct_answer = correct_answers_list[0] if correct_answers_list else ""
-
-        for i, correct in enumerate(normalized_corrects):
-            score = self.string_similarity(normalized_user, correct)
-            if score > best_match_score:
-                best_match_score = score
-                best_correct_answer = correct_answers_list[i]
-
-        correctness = round(best_match_score * 100)
-
-        # STAGE 3: AI FALLBACK (IF NEEDED)
-        feedback = ""
-        if  0 <= correctness < 100:
-            # Run AI evaluation asynchronously
-            ai_result = await self.ai_evaluate(question_text, user_answer, best_correct_answer, character_id)
-
-            # Blend scores (controlled adjustment)
-            ai_correctness = ai_result['ai_correctness']
-            correctness = min(100, max(0, round((correctness * 0.7) + (ai_correctness * 0.3))))
-            feedback = ai_result['ai_feedback']
-
-        # STAGE 4: ADVANCE DECISION (More lenient for language learning)
-        advance = correctness >= 50
-
-        # STAGE 5: FEEDBACK CONTROL
-        # if correctness < 30:
-        #     feedback = "please try again."
+        # Convert to old format
+        correctness = {
+            EvaluationState.PERFECT: 100,
+            EvaluationState.ACCEPTABLE: 75,
+            EvaluationState.PARTIAL: 45,
+            EvaluationState.WRONG: 25
+        }.get(result.state, 60)
 
         return {
             'correctness': correctness,
-            'advance': advance,
-            'feedback': feedback
+            'advance': result.advance,
+            'feedback': result.feedback
         }
 
     def evaluate_answer(
@@ -205,17 +346,13 @@ Your response:"""
         """
         import asyncio
         try:
-            # Try to get the current event loop
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                # If we're in a running event loop, we need to handle this differently
-                # For now, skip AI evaluation in sync mode when in event loop
+                # Skip AI evaluation in sync mode when in event loop
                 return self._evaluate_answer_sync(user_answer, correct_answers_list, question_text, character_id)
             else:
-                # If no running loop, we can use asyncio.run
                 return loop.run_until_complete(self.evaluate_answer_async(user_answer, correct_answers_list, question_text, character_id))
         except RuntimeError:
-            # No event loop, use asyncio.run
             return asyncio.run(self.evaluate_answer_async(user_answer, correct_answers_list, question_text, character_id))
 
     def _evaluate_answer_sync(
@@ -251,29 +388,20 @@ Your response:"""
 
         # STAGE 2: PARTIAL STRING MATCH SCORING
         best_match_score = 0.0
-        best_correct_answer = correct_answers_list[0] if correct_answers_list else ""
-
-        for i, correct in enumerate(normalized_corrects):
-            score = self.string_similarity(normalized_user, correct)
+        for correct in normalized_corrects:
+            score = self.sequence_similarity(normalized_user, correct)
             if score > best_match_score:
                 best_match_score = score
-                best_correct_answer = correct_answers_list[i]
 
         correctness = round(best_match_score * 100)
-
-        # STAGE 3: AI FALLBACK (SKIP IN SYNC MODE WHEN IN EVENT LOOP)
-        feedback = ""
-        # Skip AI evaluation in sync mode to avoid event loop issues
 
         # STAGE 4: ADVANCE DECISION (More lenient for language learning)
         advance = correctness >= 50
 
-        # STAGE 5: FEEDBACK CONTROL
-
         return {
             'correctness': correctness,
             'advance': advance,
-            'feedback': feedback
+            'feedback': ""
         }
 
 
@@ -289,7 +417,7 @@ async def evaluate_answer_async(
     character_id: str = None
 ) -> Dict:
     """Async wrapper for evaluation pipeline."""
-    return evaluation_pipeline.evaluate_answer(
+    return await evaluation_pipeline.evaluate_answer_async(
         user_answer, correct_answers_list, question_text, character_id
     )
 
