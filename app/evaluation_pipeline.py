@@ -37,36 +37,68 @@ class EvaluationPipeline:
         """Calculate similarity ratio between two strings."""
         return difflib.SequenceMatcher(None, str1, str2).ratio()
 
-    async def ai_evaluate(self, question_text: str, user_answer: str, correct_answer: str, character_id: str = None) -> Dict:
+    async def ai_evaluate(self, question_text: str, user_answer: str, correct_answer: str, character_id: str = None, conversation_history: List[Dict] = None) -> Dict:
         """
-        AI evaluation for ambiguous cases.
+        AI evaluation for ambiguous cases with character personality and conversation context.
         Returns: {'ai_correctness': float, 'ai_feedback': str}
         """
         try:
             # Load character for contextual feedback
             character = await self.ai_load_character(character_id) if character_id else None
-            char_name = character.get('name', 'Teacher') if character else 'Teacher'
+            if not character:
+                character = {
+                    'name': 'Teacher',
+                    'personality': 'helpful',
+                    'role': 'teacher',
+                    'speaking_style': 'friendly and encouraging'
+                }
 
-            prompt = f"""Compare user answer with correct answer for this question: "{question_text}"
+            # Build conversation context (last 3 exchanges)
+            conversation_context = ""
+            if conversation_history and len(conversation_history) > 0:
+                recent_exchanges = conversation_history[-3:]  # Last 3 exchanges
+                conversation_lines = []
+                for exchange in recent_exchanges:
+                    user_msg = exchange.get('user_answer', exchange.get('user_message', ''))
+                    ai_msg = exchange.get('ai_feedback', exchange.get('ai_message_roman', ''))
+                    if user_msg and ai_msg:
+                        conversation_lines.append(f"Student: {user_msg}")
+                        conversation_lines.append(f"{character.get('name', 'Teacher')}: {ai_msg}")
+                if conversation_lines:
+                    conversation_context = "\nRecent conversation:\n" + "\n".join(conversation_lines) + "\n"
 
-User Answer: "{user_answer}"
-Correct Answer: "{correct_answer}"
+            prompt = f"""You are {character.get('name', 'Teacher')}, a {character.get('role', 'teacher')} with {character.get('personality', 'helpful')} personality.
 
-IMPORTANT: Ignore casing differences and punctuation when evaluating. Focus on meaning and content.
+QUESTION: "{question_text}"
+STUDENT ANSWER: "{user_answer}"
+CORRECT ANSWER: "{correct_answer}"
+{conversation_context}
 
-Identify incorrect or missing parts.
-Respond in Roman Punjabi with:
-- What is wrong
-- How to fix it
-- Correct answer
+EVALUATION TASK:
+Compare the student's answer with the correct answer. Consider spelling variations, similar meanings, and cultural context in Punjabi learning.
 
-Be concise, max 2 sentences. No English."""
+RESPONSE GUIDELINES:
+- Respond as {character.get('name', 'Teacher')} in a {character.get('speaking_style', 'friendly and encouraging')} way
+- Use Roman Punjabi only (no English)
+- Keep it conversational, like talking to a family member
+- If mostly correct: Encourage and gently suggest improvements
+- If wrong: Guide helpfully without being harsh, maintain the learning spirit
+- Reference previous conversation if relevant
+- Be concise but warm (max 3 sentences)
+- Show {character.get('personality', 'helpful')} personality traits
 
-            ai_response = await self.ai_call_gemini(prompt, max_tokens=60)
+Your response:"""
 
-            # Estimate correctness from AI response
-            # If AI provides correction, assume lower correctness
-            ai_correctness = 60.0  # Default for AI intervention cases
+            ai_response = await self.ai_call_gemini(prompt, max_tokens=100)
+
+            # Estimate correctness based on AI response content
+            response_lower = ai_response.lower()
+            if any(word in response_lower for word in ['sahi', 'accha', 'bahut', 'shabaash', 'correct']):
+                ai_correctness = 75.0  # Positive feedback suggests higher correctness
+            elif any(word in response_lower for word in ['try', 'kar', 'galat', 'wrong', 'check']):
+                ai_correctness = 45.0  # Suggestive feedback suggests moderate correctness
+            else:
+                ai_correctness = 60.0  # Default for AI intervention
 
             return {
                 'ai_correctness': ai_correctness,
@@ -74,10 +106,18 @@ Be concise, max 2 sentences. No English."""
             }
 
         except Exception as e:
-            # Fallback if AI fails
+            # Character-specific fallback
+            char_name = "Teacher"
+            if character_id and self.ai_load_character:
+                try:
+                    char = await self.ai_load_character(character_id)
+                    char_name = char.get('name', 'Teacher') if char else 'Teacher'
+                except:
+                    pass
+
             return {
                 'ai_correctness': 50.0,
-                'ai_feedback': "Sahi jawab check karo ji."
+                'ai_feedback': f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
             }
 
     async def evaluate_answer_async(
@@ -85,7 +125,8 @@ Be concise, max 2 sentences. No English."""
         user_answer: str,
         correct_answers_list: List[str],
         question_text: str = "",
-        character_id: str = None
+        character_id: str = None,
+        conversation_history: List[Dict] = None
     ) -> Dict:
         """
         Async version of evaluation pipeline implementing the three-stage process.

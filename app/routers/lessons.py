@@ -113,7 +113,7 @@ async def submit_answer(
 
         # Validate answer
         result = await lesson_service.validate_answer(
-            progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer
+            progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer, request.user_id
         )
 
         # Save emotion interaction if emotion is present

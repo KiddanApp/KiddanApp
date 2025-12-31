@@ -57,6 +57,7 @@ class SimplifiedLessonService:
         from app.services.ai_service import call_gemini, load_character
         self.call_gemini = call_gemini
         self.load_character = load_character
+        self.conversation_history = {}  # Store conversation history per user-character pair
 
     async def _get_character_data(self, character_id: str) -> Optional[Dict[str, Any]]:
         """Get character lesson data from MongoDB or cache"""
@@ -118,8 +119,8 @@ class SimplifiedLessonService:
                 "advance": True,
             }
 
-    async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str) -> Dict[str, Any]:
-        """Validate user answer using the three-stage evaluation pipeline"""
+    async def validate_answer(self, current_lesson_index: int, current_step_index: int, character_id: str, user_answer: str, user_id: str) -> Dict[str, Any]:
+        """Validate user answer using the three-stage evaluation pipeline with conversation context"""
         lesson = await self.get_lesson_by_index(current_lesson_index, character_id)
         if not lesson:
             return {"valid": False, "advance": False, "feedback": "Lesson not found", "emotion": "normal"}
@@ -136,6 +137,13 @@ class SimplifiedLessonService:
         if not user_answer.strip():
             return {"valid": False, "advance": False, "feedback": "", "retry": False, "emotion": "normal"}
 
+        # Get conversation history for this user-character pair
+        conversation_key = f"{user_id}_{character_id}"
+        if conversation_key not in self.conversation_history:
+            self.conversation_history[conversation_key] = []
+
+        conversation_history = self.conversation_history[conversation_key][-3:]  # Last 3 exchanges
+
         # For text inputs without predefined correct answers, use AI feedback
         if lesson_type in ["text", "text-input"] and not correct_answers:
             # Extract expected answer from character message if possible
@@ -147,8 +155,16 @@ class SimplifiedLessonService:
 
         # If still no correct answers, use AI evaluation
         if not correct_answers:
-            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id)
+            ai_feedback = await self.generate_ai_feedback(user_answer, step, character_id, conversation_history)
             emotion = self._determine_feedback_emotion(ai_feedback)
+
+            # Store this interaction in conversation history
+            self.conversation_history[conversation_key].append({
+                "user_answer": user_answer,
+                "ai_feedback": ai_feedback,
+                "timestamp": asyncio.get_event_loop().time()
+            })
+
             return {
                 "valid": True,  # Accept open-ended responses
                 "advance": True,
@@ -157,14 +173,22 @@ class SimplifiedLessonService:
                 "emotion": emotion
             }
 
-        # Use the three-stage evaluation pipeline
+        # Use the three-stage evaluation pipeline with conversation context
         question_text = step.get("question", "")
         evaluation_result = await evaluation_pipeline.evaluate_answer_async(
             user_answer=user_answer,
             correct_answers_list=correct_answers,
             question_text=question_text,
-            character_id=character_id
+            character_id=character_id,
+            conversation_history=conversation_history
         )
+
+        # Store this interaction in conversation history
+        self.conversation_history[conversation_key].append({
+            "user_answer": user_answer,
+            "ai_feedback": evaluation_result.get("feedback", ""),
+            "timestamp": asyncio.get_event_loop().time()
+        })
 
         # Map pipeline results to service response format
         emotion = "happy" if evaluation_result["correctness"] >= 80 else "normal"
@@ -197,7 +221,7 @@ class SimplifiedLessonService:
         else:
             return "normal"
 
-    async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], character_id: str) -> str:
+    async def generate_ai_feedback(self, user_answer: str, step: Dict[str, Any], character_id: str, conversation_history: List[Dict] = None) -> str:
         """Generate contextual AI feedback with character personality context - ENHANCED for better evaluation"""
         if not user_answer.strip():
             return "Jawab deo ji."
@@ -215,10 +239,10 @@ class SimplifiedLessonService:
 
         # Build conversation context from previous interactions if available
         conversation_context = ""
-        if hasattr(self, 'conversation_history') and self.conversation_history:
-            recent_messages = self.conversation_history[-3:]  # Last 3 exchanges
+        if conversation_history and len(conversation_history) > 0:
+            recent_messages = conversation_history[-3:]  # Last 3 exchanges
             conversation_context = "\nRecent conversation:\n" + "\n".join([
-                f"User: {msg.get('user_message', '')}\nAI: {msg.get('ai_message_roman', '')}"
+                f"Student: {msg.get('user_answer', '')}\n{character.get('name', 'Teacher')}: {msg.get('ai_feedback', '')}"
                 for msg in recent_messages
             ])
 
