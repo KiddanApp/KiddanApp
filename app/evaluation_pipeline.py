@@ -317,32 +317,47 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
         """
         Async wrapper for backward compatibility.
         """
-        # Default lesson_type if not provided
-        if lesson_type is None:
-            lesson_type = "text"  # Most common
+        try:
+            print(f"DEBUG: evaluate_answer_async called with user_answer='{user_answer[:50]}...', lesson_type={lesson_type}")
 
-        result = await self.evaluate_answer(
-            user_answer=user_answer,
-            correct_answers_list=correct_answers_list,
-            question_text=question_text,
-            lesson_type=lesson_type,
-            character_id=character_id,
-            chat_history=conversation_history
-        )
+            # Default lesson_type if not provided
+            if lesson_type is None:
+                lesson_type = "text"  # Most common
+                print(f"DEBUG: Using default lesson_type='{lesson_type}'")
 
-        # Convert to old format
-        correctness = {
-            EvaluationState.PERFECT: 100,
-            EvaluationState.ACCEPTABLE: 75,
-            EvaluationState.PARTIAL: 45,
-            EvaluationState.WRONG: 25
-        }.get(result.state, 60)
+            print(f"DEBUG: Calling evaluate_answer with lesson_type='{lesson_type}'")
+            result = await self.evaluate_answer(
+                user_answer=user_answer,
+                correct_answers_list=correct_answers_list,
+                question_text=question_text,
+                lesson_type=lesson_type,
+                character_id=character_id,
+                chat_history=conversation_history
+            )
 
-        return {
-            'correctness': correctness,
-            'advance': result.advance,
-            'feedback': result.feedback
-        }
+            print(f"DEBUG: evaluate_answer returned: state={result.state}, advance={result.advance}")
+
+            # Convert to old format
+            correctness = {
+                EvaluationState.PERFECT: 100,
+                EvaluationState.ACCEPTABLE: 75,
+                EvaluationState.PARTIAL: 45,
+                EvaluationState.WRONG: 25
+            }.get(result.state, 60)
+
+            response = {
+                'correctness': correctness,
+                'advance': result.advance,
+                'feedback': result.feedback
+            }
+            print(f"DEBUG: Returning response: {response}")
+            return response
+
+        except Exception as e:
+            print(f"DEBUG: Exception in evaluate_answer_async: {type(e).__name__}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
 
     def evaluate_answer(
         self,

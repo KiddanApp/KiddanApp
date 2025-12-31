@@ -175,6 +175,7 @@ class SimplifiedLessonService:
 
         # Use the three-stage evaluation pipeline with conversation context
         question_text = step.get("question", "")
+        print(f"DEBUG: Lesson service calling evaluation_pipeline with lesson_type='{lesson_type}', user_answer='{user_answer[:50]}...', correct_answers={correct_answers}")
         evaluation_result = await evaluation_pipeline.evaluate_answer_async(
             user_answer=user_answer,
             correct_answers_list=correct_answers,
@@ -183,6 +184,7 @@ class SimplifiedLessonService:
             conversation_history=conversation_history,
             lesson_type=lesson_type
         )
+        print(f"DEBUG: Lesson service got evaluation_result: {evaluation_result}")
 
         # Store this interaction in conversation history
         self.conversation_history[conversation_key].append({
