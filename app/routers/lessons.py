@@ -103,18 +103,27 @@ async def submit_answer(
     lesson_service: SimplifiedLessonService = Depends(get_simplified_lesson_service)
 ):
     """Submit answer for current question"""
+    print(f"DEBUG: submit_answer called with user_id={request.user_id}, character_id={request.character_id}, answer='{request.answer[:50]}...'")
+
     try:
         # Get current progress
+        print(f"DEBUG: Getting progress for user {request.user_id}, character {request.character_id}")
         progress = await progress_service.get_progress(
             request.user_id, request.character_id
         )
         if not progress:
+            print(f"DEBUG: No progress found, raising 404")
             raise HTTPException(status_code=404, detail="Lessons not started")
 
+        print(f"DEBUG: Progress found - lesson_index={progress.current_lesson_index}, step_index={progress.current_step_index}")
+
         # Validate answer
+        print(f"DEBUG: Calling validate_answer")
         result = await lesson_service.validate_answer(
             progress.current_lesson_index, progress.current_step_index, request.character_id, request.answer, request.user_id
         )
+
+        print(f"DEBUG: validate_answer returned: {result}")
 
         # Save emotion interaction if emotion is present
         if "emotion" in result:
@@ -127,18 +136,21 @@ async def submit_answer(
                     "timestamp": datetime.utcnow()
                 }
                 await db.character_interactions.insert_one(emotion_data)
-                print(f"Saved emotion: {result['emotion']} for user {request.user_id}, character {request.character_id}")
+                print(f"DEBUG: Saved emotion: {result['emotion']} for user {request.user_id}, character {request.character_id}")
             except Exception as e:
                 # Don't fail the request if emotion saving fails
-                print(f"Failed to save emotion: {e}")
+                print(f"DEBUG: Failed to save emotion: {e}")
                 pass
 
         if result["valid"] and result["advance"]:
+            print(f"DEBUG: Answer is valid and should advance")
             # Advance to next step
             new_step_index = progress.current_step_index + 1
             # Check if this completes the lesson
+            print(f"DEBUG: Checking if lesson is completed")
             lesson = await lesson_service.get_lesson_by_index(progress.current_lesson_index, request.character_id)
             if lesson and new_step_index >= len(lesson["steps"]):
+                print(f"DEBUG: Lesson completed, advancing to next lesson")
                 # Lesson completed, advance to next lesson
                 new_lesson_index = progress.current_lesson_index + 1
                 new_step_index = 0
@@ -146,16 +158,22 @@ async def submit_answer(
                     request.user_id, request.character_id, new_lesson_index, new_step_index
                 )
             else:
+                print(f"DEBUG: Advancing to next step in current lesson")
                 # Just advance step
                 await progress_service.update_progress(
                     request.user_id, request.character_id, progress.current_lesson_index, new_step_index
                 )
 
+        print(f"DEBUG: Returning result: {result}")
         return result
 
     except HTTPException:
+        print(f"DEBUG: HTTPException raised")
         raise
     except Exception as e:
+        print(f"DEBUG: Unexpected exception in submit_answer: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error submitting answer: {str(e)}")
 
 @router.get("/{character_key}")
