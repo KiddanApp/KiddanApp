@@ -303,13 +303,15 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
         correct_answers_list: List[str],
         question_text: str = "",
         character_id: str = None,
-        conversation_history: List[Dict] = None
+        conversation_history: List[Dict] = None,
+        lesson_type: str = None
     ) -> Dict:
         """
         Async wrapper for backward compatibility.
         """
-        # Default lesson_type - could be made configurable later
-        lesson_type = "text"  # Most common
+        # Default lesson_type if not provided
+        if lesson_type is None:
+            lesson_type = "text"  # Most common
 
         result = await self.evaluate_answer(
             user_answer=user_answer,
@@ -414,11 +416,12 @@ async def evaluate_answer_async(
     user_answer: str,
     correct_answers_list: List[str],
     question_text: str = "",
-    character_id: str = None
+    character_id: str = None,
+    lesson_type: str = None
 ) -> Dict:
     """Async wrapper for evaluation pipeline."""
     return await evaluation_pipeline.evaluate_answer_async(
-        user_answer, correct_answers_list, question_text, character_id
+        user_answer, correct_answers_list, question_text, character_id, lesson_type=lesson_type
     )
 
 

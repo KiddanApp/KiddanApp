@@ -180,7 +180,8 @@ class SimplifiedLessonService:
             correct_answers_list=correct_answers,
             question_text=question_text,
             character_id=character_id,
-            conversation_history=conversation_history
+            conversation_history=conversation_history,
+            lesson_type=lesson_type
         )
 
         # Store this interaction in conversation history
