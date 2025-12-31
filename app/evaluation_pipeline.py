@@ -138,6 +138,10 @@ class EvaluationPipeline:
                     'speaking_style': 'friendly and encouraging'
                 }
 
+            print("AI_AVAILABLE:", AI_AVAILABLE)
+            print("ai_call_gemini:", self.ai_call_gemini)
+
+
             # Build conversation context
             conversation_context = ""
             if context.get('chat_history'):
@@ -216,7 +220,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
                 return f"Shabaash! Sahi jawab. Agge vadh."
 
         if advance and state == EvaluationState.PERFECT:
-            return f"Bilkul sahi! Shabaash!"
+            return f"Bilkul sahi! Shabaash! {ai_feedback}"
 
         if not advance and state == EvaluationState.PARTIAL:
             if ai_feedback:
