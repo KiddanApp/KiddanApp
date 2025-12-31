@@ -121,6 +121,14 @@ class EvaluationPipeline:
         Returns: (state, feedback)
         """
         try:
+            # Check if AI is available
+            if not AI_AVAILABLE or not self.ai_call_gemini:
+                # Fallback to heuristic-based evaluation
+                char_name = "Teacher"
+                if context.get('character'):
+                    char_name = context['character'].get('name', 'Teacher')
+                return EvaluationState.ACCEPTABLE, f"{char_name} kehta hai: Sahi jawab check kar ke dubara try karo ji."
+
             character = context.get('character')
             if not character:
                 character = {
@@ -187,7 +195,7 @@ Then: Feedback in Roman Punjabi (max 2 sentences)"""
             return state, feedback
 
         except Exception as e:
-            # Fallback
+            # Fallback - AI failed, use heuristic-based response
             char_name = "Teacher"
             if context.get('character'):
                 char_name = context['character'].get('name', 'Teacher')
